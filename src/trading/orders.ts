@@ -1,6 +1,7 @@
 import { ClientModule } from "../client.ts";
-import { AlpacaDateTimeSchema, AssetClassSchema } from "../common.ts";
 import { Z } from "../external.ts";
+import { AssetClassSchema } from "./instruments.ts";
+import { AlpacaDateTimeSchema } from "./time.ts";
 
 export const OrderClassSchema = Z.enum(["simple", "bracket", "oco", "oto", "mleg"]);
 

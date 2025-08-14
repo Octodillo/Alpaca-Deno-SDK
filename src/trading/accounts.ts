@@ -1,6 +1,7 @@
 import { ClientModule } from "../client.ts";
-import { AlpacaDateSchema, AlpacaDateTimeSchema, CurrencySchema } from "../common.ts";
+import { CurrencySchema } from "../common.ts";
 import { Z } from "../external.ts";
+import { AlpacaDateSchema, AlpacaDateTimeSchema } from "./time.ts";
 
 /**
  * The various possible account status values.

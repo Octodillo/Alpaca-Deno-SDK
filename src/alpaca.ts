@@ -3,13 +3,11 @@ import { APIMethod, BodyParams, QueryParams } from "./common.ts";
 import { loadSync } from "./external.ts";
 import {
   TradingAccountModule,
-  TradingAssetsModule,
   TradingTimeModule,
-  TradingCryptoModule,
   TradingHistoryModule,
   TradingOrdersModule,
-  TradingPositionsModule,
   TradingWatchlistsModule,
+  TradingInstrumentsModule,
 } from "./trading/mod.ts";
 
 export default class Alpaca {
@@ -62,13 +60,11 @@ export class TradingClient extends AlpacaClient {
   }
 
   public readonly account = new TradingAccountModule(this);
-  public readonly assets = new TradingAssetsModule(this);
+  public readonly instruments = new TradingInstrumentsModule(this);
   public readonly orders = new TradingOrdersModule(this);
-  public readonly positions = new TradingPositionsModule(this);
   public readonly history = new TradingHistoryModule(this);
   public readonly watchlists = new TradingWatchlistsModule(this);
   public readonly time = new TradingTimeModule(this);
-  public readonly crypto = new TradingCryptoModule(this);
 }
 
 export class MarketClient extends AlpacaClient {

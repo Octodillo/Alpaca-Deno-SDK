@@ -1,5 +1,5 @@
 import { ClientModule } from "../client.ts";
-import { AlpacaDateSchema, AlpacaDateTimeSchema } from "../common.ts";
+import { AlpacaDateSchema, AlpacaDateTimeSchema } from "./time.ts";
 import { Z } from "../external.ts";
 
 export const HistoryPeriodSchema = Z.string().regex(/\d+[DWMA]/);

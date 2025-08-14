@@ -1,6 +1,9 @@
 import { ClientModule } from "../client.ts";
-import { AlpacaDateSchema, AlpacaDateTimeSchema } from "../common.ts";
 import { Z } from "../external.ts";
+
+export const AlpacaDateSchema = Z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
+export const AlpacaTimeSchema = Z.string().regex(/^\d{2}:\d{2}$/);
+export const AlpacaDateTimeSchema = Z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}Z$/);
 
 export const CalendarDateTypeSchema = Z.enum(["TRADING", "SETTLEMENT"]);
 export type CalendarDateType = Z.infer<typeof CalendarDateTypeSchema>;

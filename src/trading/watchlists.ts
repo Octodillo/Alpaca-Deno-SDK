@@ -1,7 +1,7 @@
 import { ClientModule } from "../client.ts";
-import { AlpacaDateSchema } from "../common.ts";
+import { AlpacaDateSchema } from "./time.ts";
 import { Z } from "../external.ts";
-import { AssetSchema } from "./assets.ts";
+import { AssetSchema } from "./instruments.ts";
 
 export const WatchlistSchema = Z.object({
   id: Z.uuid(),
