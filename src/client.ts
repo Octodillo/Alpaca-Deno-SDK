@@ -1,16 +1,5 @@
-import Alpaca from "./alpaca.ts";
-import { APIMethod, BodyParams, QueryParams } from "./common.ts";
+import Alpaca from "./mod.ts";
 import { Z } from "./external.ts";
-
-export interface AlpacaAuth {
-  key: string;
-  secret: string;
-}
-
-export interface AlpacaConfig {
-  auth?: AlpacaAuth;
-  paper: boolean;
-}
 
 export abstract class ClientModule {
   constructor(protected client: AlpacaClient) {}
@@ -21,9 +10,17 @@ export interface FetchPayload {
   body?: BodyParams;
 }
 
+export type APIMethod = "GET" | "OPTIONS" | "PUT" | "DELETE" | "POST" | "PATCH";
+/**
+ * Supported currencies for trading accounts.
+ */
+
+export type QueryParams = Record<string, string | number | boolean | null>;
+export type BodyParams = Record<string, unknown>;
+
 export abstract class AlpacaClient {
   constructor(protected alpaca: Alpaca) {}
-  protected abstract getBaseAPI(): string;
+  protected abstract baseAPI: string;
 
   async fetch<
     ZQuery extends Z.ZodType<QueryParams>,
@@ -50,7 +47,7 @@ export abstract class AlpacaClient {
     if (params.payload.query) prepared.query = params.querySchema.parse(params.payload.query) as QueryParams;
     if (params.payload.body) prepared.body = params.bodySchema.parse(params.payload.body) as BodyParams;
 
-    const base = `https://${this.getBaseAPI()}.alpaca.markets/`;
+    const base = `https://${this.baseAPI}.alpaca.markets/`;
     const url = new URL(params.endpoint, base);
     const response = await this.alpaca.fetch(url, params.method, prepared);
     if (response.status === params.okStatus) return params.responseSchema.parse(await response.json());

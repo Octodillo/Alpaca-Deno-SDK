@@ -1,38 +1,13 @@
 import { ClientModule } from "../client.ts";
-import { AlpacaDateSchema } from "./time.ts";
 import { Z } from "../external.ts";
-import { AssetSchema } from "./instruments.ts";
-
-export const WatchlistSchema = Z.object({
-  id: Z.uuid(),
-  account_id: Z.uuid(),
-  created_at: AlpacaDateSchema,
-  updated_at: AlpacaDateSchema,
-  name: Z.string().min(1),
-  assets: AssetSchema.array().optional(),
-}).strict();
-
-export type Watchlist = Z.infer<typeof WatchlistSchema>;
-
-export const CreateWatchlistBodySchema = Z.object({
-  name: Z.string().min(1),
-  symbols: Z.string().nullable().array(),
-}).strict();
-
-export type CreateWatchlistBody = Z.input<typeof CreateWatchlistBodySchema>;
-
-export const UpdateWatchlistQuerySchema = Z.object({
-  name: Z.string().min(1).optional(),
-}).strict();
-
-export type UpdateWatchlistQuery = Z.input<typeof UpdateWatchlistQuerySchema>;
-
-export const UpdateWatchlistBodySchema = Z.object({
-  name: Z.string().min(1).optional(),
-  symbols: Z.string().nullable().array().optional(),
-}).strict();
-
-export type UpdateWatchlistBody = Z.input<typeof UpdateWatchlistBodySchema>;
+import {
+  WatchlistSchema,
+  CreateWatchlistBody,
+  CreateWatchlistBodySchema,
+  UpdateWatchlistBody,
+  UpdateWatchlistQuerySchema,
+  UpdateWatchlistBodySchema,
+} from "./schemas.ts";
 
 export default class TradingWatchlistsModule extends ClientModule {
   all() {
