@@ -10,11 +10,11 @@ import TradingWatchlistsModule from "./watchlists.ts";
 export default class TradingClient extends AlpacaClient {
   protected override baseAPI = this.alpaca.config.paper ? "paper-api" : "live";
 
-  public readonly account = new TradingAccountModule(this);
-  public readonly instruments = new TradingInstrumentsModule(this);
-  public readonly positions = new TradingPositionsModule(this);
-  public readonly orders = new TradingOrdersModule(this);
-  public readonly watchlists = new TradingWatchlistsModule(this);
+  public readonly account = TradingAccountModule(this);
+  public readonly instruments = TradingInstrumentsModule(this);
+  public readonly orders = TradingOrdersModule(this);
+  public readonly positions = TradingPositionsModule(this);
+  public readonly watchlists = TradingWatchlistsModule(this);
 
   public calendar(query: CalendarQuery = {}): Promise<Calendar> {
     return this.fetch({

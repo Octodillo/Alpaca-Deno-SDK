@@ -1,5 +1,5 @@
-import { ClientModule } from "../client.ts";
 import { Z } from "../external.ts";
+import TradingClient from "./mod.ts";
 import {
   CreateOrderBody,
   Order,
@@ -12,9 +12,9 @@ import {
   DeleteAllOrdersResponseSchema,
 } from "./schemas.ts";
 
-export default class TradingOrdersModule extends ClientModule {
-  create(body: CreateOrderBody): Promise<Order> {
-    return this.client.fetch({
+export default (client: TradingClient) => ({
+  create: (body: CreateOrderBody): Promise<Order> =>
+    client.fetch({
       name: "Create Order",
       endpoint: "v2/orders",
       method: "POST",
@@ -30,11 +30,10 @@ export default class TradingOrdersModule extends ClientModule {
       },
 
       payload: { body },
-    });
-  }
+    }),
 
-  search(query: OrdersQuery): Promise<Order[]> {
-    return this.client.fetch({
+  search: (query: OrdersQuery): Promise<Order[]> =>
+    client.fetch({
       name: "Get Orders",
       endpoint: "v2/orders",
       method: "GET",
@@ -46,11 +45,10 @@ export default class TradingOrdersModule extends ClientModule {
       okStatus: 200,
 
       payload: { query },
-    });
-  }
+    }),
 
-  deleteAll(): Promise<DeleteAllOrdersResponse> {
-    return this.client
+  deleteAll: (): Promise<DeleteAllOrdersResponse> =>
+    client
       .fetch({
         name: "Delete All Orders",
         endpoint: "v2/orders",
@@ -69,11 +67,10 @@ export default class TradingOrdersModule extends ClientModule {
         if (errors) throw new AggregateError(errors, "Delete All Orders: Some orders failed to delete");
 
         return parsed;
-      });
-  }
+      }),
 
-  getByClientID(client_order_id: string): Promise<Order> {
-    return this.client.fetch({
+  getByClientID: (client_order_id: string): Promise<Order> =>
+    client.fetch({
       name: "Get Order by Client ID",
       endpoint: "v2/orders:by_client_order_id",
       method: "GET",
@@ -85,11 +82,10 @@ export default class TradingOrdersModule extends ClientModule {
       okStatus: 200,
 
       payload: { query: { client_order_id } },
-    });
-  }
+    }),
 
-  get(order_id: string, nested?: boolean): Promise<Order> {
-    return this.client.fetch({
+  get: (order_id: string, nested?: boolean): Promise<Order> =>
+    client.fetch({
       name: "Get Order",
       endpoint: `v2/orders/${order_id}`,
       method: "GET",
@@ -101,11 +97,10 @@ export default class TradingOrdersModule extends ClientModule {
       okStatus: 200,
 
       payload: { query: { nested } },
-    });
-  }
+    }),
 
-  delete(order_id: string): Promise<void> {
-    return this.client.fetch({
+  delete: (order_id: string): Promise<void> =>
+    client.fetch({
       name: "Delete Order",
       endpoint: `v2/orders/${order_id}`,
       method: "DELETE",
@@ -118,6 +113,5 @@ export default class TradingOrdersModule extends ClientModule {
       statusMessages: {
         422: "Delete Order: 422 The order status is not cancelable",
       },
-    });
-  }
-}
+    }),
+});

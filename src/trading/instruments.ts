@@ -1,5 +1,5 @@
-import { ClientModule } from "../client.ts";
 import { Z } from "../external.ts";
+import TradingClient from "./mod.ts";
 import {
   Asset,
   AssetSchema,
@@ -17,9 +17,9 @@ import {
   TreasuriesQuery,
 } from "./schemas.ts";
 
-class AssetsModule extends ClientModule {
-  get(symbol_or_asset_id: string): Promise<Asset> {
-    return this.client.fetch({
+const assets = (client: TradingClient) => ({
+  get: (symbol_or_asset_id: string): Promise<Asset> =>
+    client.fetch({
       name: "Get Asset",
       endpoint: `v2/assets/${symbol_or_asset_id}`,
       method: "GET",
@@ -32,11 +32,10 @@ class AssetsModule extends ClientModule {
       statusMessages: {
         404: `Asset Not Found: ${symbol_or_asset_id}`,
       },
-    });
-  }
+    }),
 
-  all(query: AssetsQuery): Promise<Asset[]> {
-    return this.client.fetch({
+  all: (query: AssetsQuery): Promise<Asset[]> =>
+    client.fetch({
       name: "Get Assets",
       endpoint: "v2/assets",
       method: "GET",
@@ -48,17 +47,16 @@ class AssetsModule extends ClientModule {
       okStatus: 200,
 
       payload: { query },
-    });
-  }
-}
+    }),
+});
 
-class CryptoModule extends ClientModule {
-  _foo() {}
-}
+const crypto = (_: TradingClient) => ({
+  _foo() {},
+});
 
-class OptionContractsModule extends ClientModule {
-  get(symbol_or_id: string): Promise<OptionContract> {
-    return this.client.fetch({
+const options = (client: TradingClient) => ({
+  get: (symbol_or_id: string): Promise<OptionContract> => {
+    return client.fetch({
       name: "Get Option Contract",
       endpoint: `v2/options/contracts/${symbol_or_id}`,
       method: "GET",
@@ -72,10 +70,10 @@ class OptionContractsModule extends ClientModule {
         404: `Option Contract Not Found: ${symbol_or_id}`,
       },
     });
-  }
+  },
 
-  all(query: OptionContractsQuery): Promise<OptionContract[]> {
-    return this.client.fetch({
+  all: (query: OptionContractsQuery): Promise<OptionContract[]> =>
+    client.fetch({
       name: "Get Option Contracts",
       endpoint: "v2/options/contracts",
       method: "GET",
@@ -87,17 +85,16 @@ class OptionContractsModule extends ClientModule {
       okStatus: 200,
 
       payload: { query },
-    });
-  }
-}
+    }),
+});
 
-export default class TradingInstrumentsModule extends ClientModule {
-  public assets = new AssetsModule(this.client);
-  public crypto = new CryptoModule(this.client);
-  public options = new OptionContractsModule(this.client);
+export default (client: TradingClient) => ({
+  assets: assets(client),
+  crypto: crypto(client),
+  options: options(client),
 
-  public treasuries(query: TreasuriesQuery): Promise<Treasury[]> {
-    return this.client.fetch({
+  treasuries: (query: TreasuriesQuery): Promise<Treasury[]> =>
+    client.fetch({
       name: "Get Treasuries",
       endpoint: "v2/treasuries",
       method: "GET",
@@ -114,6 +111,5 @@ export default class TradingInstrumentsModule extends ClientModule {
         500: "Internal Server Error",
       },
       payload: { query },
-    });
-  }
-}
+    }),
+});

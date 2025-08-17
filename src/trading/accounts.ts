@@ -1,5 +1,5 @@
-import { ClientModule } from "../client.ts";
 import { Z } from "../external.ts";
+import TradingClient from "./mod.ts";
 import {
   Account,
   HistoryQuery,
@@ -12,9 +12,9 @@ import {
   AccountConfigBody,
 } from "./schemas.ts";
 
-export default class TradingAccountModule extends ClientModule {
-  get(): Promise<Account> {
-    return this.client.fetch({
+export default (client: TradingClient) => ({
+  get: (): Promise<Account> =>
+    client.fetch({
       name: "Get Account",
       endpoint: "v2/account",
       method: "GET",
@@ -24,11 +24,10 @@ export default class TradingAccountModule extends ClientModule {
       responseSchema: AccountSchema,
 
       okStatus: 200,
-    });
-  }
+    }),
 
-  history(query: HistoryQuery): Promise<History> {
-    return this.client.fetch({
+  history: (query: HistoryQuery): Promise<History> =>
+    client.fetch({
       name: "Get Account Portfolio History",
       endpoint: "v2/account/portfolio/history",
       method: "GET",
@@ -40,11 +39,10 @@ export default class TradingAccountModule extends ClientModule {
       okStatus: 200,
 
       payload: { query },
-    });
-  }
+    }),
 
-  configs(): Promise<AccountConfigs> {
-    return this.client.fetch({
+  configs: (): Promise<AccountConfigs> =>
+    client.fetch({
       name: "Get Account Configurations",
       endpoint: "v2/account/configurations",
       method: "GET",
@@ -54,11 +52,10 @@ export default class TradingAccountModule extends ClientModule {
       responseSchema: AccountConfigBodySchema,
 
       okStatus: 200,
-    });
-  }
+    }),
 
-  config(body: AccountConfigBody) {
-    return this.client.fetch({
+  config: (body: AccountConfigBody): Promise<AccountConfigs> =>
+    client.fetch({
       name: "Account Configurations",
       endpoint: "v2/account/configurations",
       method: "PATCH",
@@ -70,8 +67,7 @@ export default class TradingAccountModule extends ClientModule {
       okStatus: 200,
 
       payload: { body },
-    });
-  }
+    }),
 
-  _activities() {}
-}
+  _activities() {},
+});

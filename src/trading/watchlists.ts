@@ -1,5 +1,5 @@
-import { ClientModule } from "../client.ts";
 import { Z } from "../external.ts";
+import TradingClient from "./mod.ts";
 import {
   WatchlistSchema,
   CreateWatchlistBody,
@@ -9,9 +9,9 @@ import {
   UpdateWatchlistBodySchema,
 } from "./schemas.ts";
 
-export default class TradingWatchlistsModule extends ClientModule {
-  all() {
-    return this.client.fetch({
+export default (client: TradingClient) => ({
+  all: () =>
+    client.fetch({
       name: "Get All Watchlists",
       endpoint: "v2/watchlists",
       method: "GET",
@@ -21,11 +21,10 @@ export default class TradingWatchlistsModule extends ClientModule {
       responseSchema: WatchlistSchema.array(),
 
       okStatus: 200,
-    });
-  }
+    }),
 
-  create(body: CreateWatchlistBody) {
-    return this.client.fetch({
+  create: (body: CreateWatchlistBody) =>
+    client.fetch({
       name: "Create Watchlist",
       endpoint: "v2/watchlists",
       method: "POST",
@@ -37,11 +36,10 @@ export default class TradingWatchlistsModule extends ClientModule {
       okStatus: 200,
 
       payload: { body },
-    });
-  }
+    }),
 
-  getByName(name: string) {
-    return this.client.fetch({
+  getByName: (name: string) =>
+    client.fetch({
       name: "Get Watchlist by Name",
       endpoint: "v2/watchlists:by_name",
       method: "GET",
@@ -53,11 +51,10 @@ export default class TradingWatchlistsModule extends ClientModule {
       okStatus: 200,
 
       payload: { query: { name } },
-    });
-  }
+    }),
 
-  getByID(watchlist_id: Z.ZodUUID) {
-    return this.client.fetch({
+  getByID: (watchlist_id: Z.ZodUUID) =>
+    client.fetch({
       name: "Get Watchlist by ID",
       endpoint: `v2/watchlists/${watchlist_id}`,
       method: "GET",
@@ -67,11 +64,10 @@ export default class TradingWatchlistsModule extends ClientModule {
       responseSchema: WatchlistSchema,
 
       okStatus: 200,
-    });
-  }
+    }),
 
-  updateByName(name: string, body: UpdateWatchlistBody) {
-    return this.client.fetch({
+  updateByName: (name: string, body: UpdateWatchlistBody) =>
+    client.fetch({
       name: "Update Watchlist by Name",
       endpoint: "v2/watchlists:by_name",
       method: "PUT",
@@ -83,11 +79,10 @@ export default class TradingWatchlistsModule extends ClientModule {
       okStatus: 200,
 
       payload: { query: { name }, body },
-    });
-  }
+    }),
 
-  updateByID(watchlist_id: Z.ZodUUID, body: UpdateWatchlistBody) {
-    return this.client.fetch({
+  updateByID: (watchlist_id: Z.ZodUUID, body: UpdateWatchlistBody) =>
+    client.fetch({
       name: "Update Watchlist by ID",
       endpoint: `v2/watchlists/${watchlist_id}`,
       method: "PUT",
@@ -99,11 +94,10 @@ export default class TradingWatchlistsModule extends ClientModule {
       okStatus: 200,
 
       payload: { body },
-    });
-  }
+    }),
 
-  addByName(name: string, symbols: string[]) {
-    return this.client.fetch({
+  addByName: (name: string, symbols: string[]) =>
+    client.fetch({
       name: "Add Symbols to Watchlist by Name",
       endpoint: "v2/watchlists:by_name",
       method: "POST",
@@ -115,11 +109,10 @@ export default class TradingWatchlistsModule extends ClientModule {
       okStatus: 200,
 
       payload: { query: { name }, body: { symbols } },
-    });
-  }
+    }),
 
-  addByID(watchlist_id: Z.ZodUUID, symbols: string[]) {
-    return this.client.fetch({
+  addByID: (watchlist_id: Z.ZodUUID, symbols: string[]) =>
+    client.fetch({
       name: "Add Symbols to Watchlist by ID",
       endpoint: `v2/watchlists/${watchlist_id}`,
       method: "POST",
@@ -131,11 +124,10 @@ export default class TradingWatchlistsModule extends ClientModule {
       okStatus: 200,
 
       payload: { body: { symbols } },
-    });
-  }
+    }),
 
-  deleteByName(name: string) {
-    return this.client.fetch({
+  deleteByName: (name: string) =>
+    client.fetch({
       name: "Delete Watchlist by Name",
       endpoint: "v2/watchlists:by_name",
       method: "DELETE",
@@ -147,11 +139,10 @@ export default class TradingWatchlistsModule extends ClientModule {
       okStatus: 204,
 
       payload: { query: { name } },
-    });
-  }
+    }),
 
-  deleteByID(watchlist_id: Z.ZodUUID) {
-    return this.client.fetch({
+  deleteByID: (watchlist_id: Z.ZodUUID) =>
+    client.fetch({
       name: "Delete Watchlist by ID",
       endpoint: `v2/watchlists/${watchlist_id}`,
       method: "DELETE",
@@ -164,11 +155,10 @@ export default class TradingWatchlistsModule extends ClientModule {
       statusMessages: {
         404: `Watchlist Not Found: ${watchlist_id}`,
       },
-    });
-  }
+    }),
 
-  remove(watchlist_id: Z.ZodUUID, symbol: string) {
-    return this.client.fetch({
+  remove: (watchlist_id: Z.ZodUUID, symbol: string) =>
+    client.fetch({
       name: "Remove Symbol from Watchlist by ID",
       endpoint: `v2/watchlists/${watchlist_id}/${symbol}`,
       method: "DELETE",
@@ -178,6 +168,5 @@ export default class TradingWatchlistsModule extends ClientModule {
       responseSchema: Z.never(),
 
       okStatus: 200,
-    });
-  }
-}
+    }),
+});

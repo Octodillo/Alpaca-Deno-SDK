@@ -1,5 +1,5 @@
-import { ClientModule } from "../client.ts";
 import { Z } from "../external.ts";
+import TradingClient from "./mod.ts";
 import {
   Position,
   AllPositionsResponseSchema,
@@ -7,14 +7,13 @@ import {
   CloseAllPositionsResponseSchema,
   PositionSchema,
   ClosePositionQuery,
-  Order,
   ClosePositionQuerySchema,
   OrderSchema,
 } from "./schemas.ts";
 
-export default class TradingPositionsModule extends ClientModule {
-  all(): Promise<Position[]> {
-    return this.client.fetch({
+export default (client: TradingClient) => ({
+  all: (): Promise<Position[]> =>
+    client.fetch({
       name: "Get All Positions",
       endpoint: "v2/positions",
       method: "GET",
@@ -24,11 +23,10 @@ export default class TradingPositionsModule extends ClientModule {
       responseSchema: AllPositionsResponseSchema,
 
       okStatus: 200,
-    });
-  }
+    }),
 
-  closeAll(cancel_orders = false): Promise<ClosePositionResponse[]> {
-    return this.client
+  closeAll: (cancel_orders = false): Promise<ClosePositionResponse[]> =>
+    client
       .fetch({
         name: "Close All Positions",
         endpoint: "v2/positions",
@@ -51,11 +49,10 @@ export default class TradingPositionsModule extends ClientModule {
           .map(r => new Error(`Close All Positions: Failed to close ${r.symbol}: ${r.status}`));
         if (errors.length) throw new AggregateError(errors);
         return parsed;
-      });
-  }
+      }),
 
-  get(symbol_or_asset_id: string): Promise<Position> {
-    return this.client.fetch({
+  get: (symbol_or_asset_id: string): Promise<Position> =>
+    client.fetch({
       name: "Get Position",
       endpoint: `v2/positions/${symbol_or_asset_id}`,
       method: "GET",
@@ -65,11 +62,10 @@ export default class TradingPositionsModule extends ClientModule {
       responseSchema: PositionSchema,
 
       okStatus: 200,
-    });
-  }
+    }),
 
-  close(symbol_or_asset_id: string, query: ClosePositionQuery): Promise<Order> {
-    return this.client.fetch({
+  close: (symbol_or_asset_id: string, query: ClosePositionQuery) =>
+    client.fetch({
       name: "Close Position",
       endpoint: `v2/positions/${symbol_or_asset_id}`,
       method: "DELETE",
@@ -81,11 +77,10 @@ export default class TradingPositionsModule extends ClientModule {
       okStatus: 200,
 
       payload: { query },
-    });
-  }
+    }),
 
-  exercise(symbol_or_contract_id: string): Promise<void> {
-    return this.client.fetch({
+  exercise: (symbol_or_contract_id: string): Promise<void> =>
+    client.fetch({
       name: "Exercise Options Position",
       endpoint: `v2/positions/${symbol_or_contract_id}/exercise`,
       method: "POST",
@@ -99,6 +94,5 @@ export default class TradingPositionsModule extends ClientModule {
         403: "Exercise Options Position: Available position quantity is not sufficient",
         422: "Exercise Options Position: One or more parameters provided are invalid",
       },
-    });
-  }
-}
+    }),
+});
