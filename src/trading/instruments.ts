@@ -32,8 +32,6 @@ class AssetsModule extends ClientModule {
       statusMessages: {
         404: `Asset Not Found: ${symbol_or_asset_id}`,
       },
-
-      payload: {},
     });
   }
 
@@ -48,7 +46,6 @@ class AssetsModule extends ClientModule {
       responseSchema: AssetsQueryResponseSchema,
 
       okStatus: 200,
-      statusMessages: {},
 
       payload: { query },
     });
@@ -74,8 +71,6 @@ class OptionContractsModule extends ClientModule {
       statusMessages: {
         404: `Option Contract Not Found: ${symbol_or_id}`,
       },
-
-      payload: {},
     });
   }
 
@@ -90,7 +85,6 @@ class OptionContractsModule extends ClientModule {
       responseSchema: OptionContractsQueryResponseSchema,
 
       okStatus: 200,
-      statusMessages: {},
 
       payload: { query },
     });

@@ -24,9 +24,6 @@ export default class TradingAccountModule extends ClientModule {
       responseSchema: AccountSchema,
 
       okStatus: 200,
-      statusMessages: {},
-
-      payload: {},
     });
   }
 
@@ -41,11 +38,8 @@ export default class TradingAccountModule extends ClientModule {
       responseSchema: HistorySchema,
 
       okStatus: 200,
-      statusMessages: {},
 
-      payload: {
-        query,
-      },
+      payload: { query },
     });
   }
 
@@ -60,9 +54,6 @@ export default class TradingAccountModule extends ClientModule {
       responseSchema: AccountConfigBodySchema,
 
       okStatus: 200,
-      statusMessages: {},
-
-      payload: {},
     });
   }
 
@@ -77,7 +68,6 @@ export default class TradingAccountModule extends ClientModule {
       responseSchema: AccountConfigBodySchema,
 
       okStatus: 200,
-      statusMessages: {},
 
       payload: { body },
     });

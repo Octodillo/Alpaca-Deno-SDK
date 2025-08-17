@@ -21,9 +21,6 @@ export default class TradingWatchlistsModule extends ClientModule {
       responseSchema: WatchlistSchema.array(),
 
       okStatus: 200,
-      statusMessages: {},
-
-      payload: {},
     });
   }
 
@@ -38,7 +35,6 @@ export default class TradingWatchlistsModule extends ClientModule {
       responseSchema: WatchlistSchema,
 
       okStatus: 200,
-      statusMessages: {},
 
       payload: { body },
     });
@@ -55,7 +51,6 @@ export default class TradingWatchlistsModule extends ClientModule {
       responseSchema: WatchlistSchema,
 
       okStatus: 200,
-      statusMessages: {},
 
       payload: { query: { name } },
     });
@@ -72,9 +67,6 @@ export default class TradingWatchlistsModule extends ClientModule {
       responseSchema: WatchlistSchema,
 
       okStatus: 200,
-      statusMessages: {},
-
-      payload: {},
     });
   }
 
@@ -89,7 +81,6 @@ export default class TradingWatchlistsModule extends ClientModule {
       responseSchema: WatchlistSchema,
 
       okStatus: 200,
-      statusMessages: {},
 
       payload: { query: { name }, body },
     });
@@ -106,7 +97,6 @@ export default class TradingWatchlistsModule extends ClientModule {
       responseSchema: WatchlistSchema,
 
       okStatus: 200,
-      statusMessages: {},
 
       payload: { body },
     });
@@ -123,7 +113,6 @@ export default class TradingWatchlistsModule extends ClientModule {
       responseSchema: WatchlistSchema,
 
       okStatus: 200,
-      statusMessages: {},
 
       payload: { query: { name }, body: { symbols } },
     });
@@ -140,7 +129,6 @@ export default class TradingWatchlistsModule extends ClientModule {
       responseSchema: WatchlistSchema,
 
       okStatus: 200,
-      statusMessages: {},
 
       payload: { body: { symbols } },
     });
@@ -157,7 +145,6 @@ export default class TradingWatchlistsModule extends ClientModule {
       responseSchema: Z.never(),
 
       okStatus: 204,
-      statusMessages: {},
 
       payload: { query: { name } },
     });
@@ -177,8 +164,6 @@ export default class TradingWatchlistsModule extends ClientModule {
       statusMessages: {
         404: `Watchlist Not Found: ${watchlist_id}`,
       },
-
-      payload: {},
     });
   }
 
@@ -193,9 +178,6 @@ export default class TradingWatchlistsModule extends ClientModule {
       responseSchema: Z.never(),
 
       okStatus: 200,
-      statusMessages: {},
-
-      payload: {},
     });
   }
 }

@@ -44,7 +44,6 @@ export default class TradingOrdersModule extends ClientModule {
       responseSchema: OrdersQueryResponseSchema,
 
       okStatus: 200,
-      statusMessages: {},
 
       payload: { query },
     });
@@ -62,9 +61,6 @@ export default class TradingOrdersModule extends ClientModule {
         responseSchema: DeleteAllOrdersResponseSchema,
 
         okStatus: 207,
-        statusMessages: {},
-
-        payload: {},
       })
       .then(parsed => {
         const errors = parsed
@@ -87,7 +83,6 @@ export default class TradingOrdersModule extends ClientModule {
       responseSchema: OrderSchema,
 
       okStatus: 200,
-      statusMessages: {},
 
       payload: { query: { client_order_id } },
     });
@@ -104,7 +99,6 @@ export default class TradingOrdersModule extends ClientModule {
       responseSchema: OrderSchema,
 
       okStatus: 200,
-      statusMessages: {},
 
       payload: { query: { nested } },
     });
@@ -124,8 +118,6 @@ export default class TradingOrdersModule extends ClientModule {
       statusMessages: {
         422: "Delete Order: 422 The order status is not cancelable",
       },
-
-      payload: {},
     });
   }
 }

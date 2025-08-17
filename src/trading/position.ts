@@ -24,9 +24,6 @@ export default class TradingPositionsModule extends ClientModule {
       responseSchema: AllPositionsResponseSchema,
 
       okStatus: 200,
-      statusMessages: {},
-
-      payload: {},
     });
   }
 
@@ -68,9 +65,6 @@ export default class TradingPositionsModule extends ClientModule {
       responseSchema: PositionSchema,
 
       okStatus: 200,
-      statusMessages: {},
-
-      payload: {},
     });
   }
 
@@ -85,7 +79,6 @@ export default class TradingPositionsModule extends ClientModule {
       responseSchema: OrderSchema,
 
       okStatus: 200,
-      statusMessages: {},
 
       payload: { query },
     });
@@ -106,8 +99,6 @@ export default class TradingPositionsModule extends ClientModule {
         403: "Exercise Options Position: Available position quantity is not sufficient",
         422: "Exercise Options Position: One or more parameters provided are invalid",
       },
-
-      payload: {},
     });
   }
 }

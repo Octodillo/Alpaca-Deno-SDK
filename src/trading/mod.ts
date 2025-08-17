@@ -27,7 +27,6 @@ export default class TradingClient extends AlpacaClient {
       responseSchema: CalendarSchema,
 
       okStatus: 200,
-      statusMessages: {},
 
       payload: { query },
     });
@@ -44,9 +43,6 @@ export default class TradingClient extends AlpacaClient {
       responseSchema: ClockSchema,
 
       okStatus: 200,
-      statusMessages: {},
-
-      payload: {},
     });
   }
 }

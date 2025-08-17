@@ -36,16 +36,16 @@ export abstract class AlpacaClient {
     responseSchema: ZResponse;
 
     okStatus: number;
-    statusMessages: Record<number, string>;
+    statusMessages?: Record<number, string>;
 
-    payload: {
+    payload?: {
       query?: Z.input<ZQuery>;
       body?: Z.input<ZBody>;
     };
   }) {
     const prepared: FetchPayload = {};
-    if (params.payload.query) prepared.query = params.querySchema.parse(params.payload.query) as QueryParams;
-    if (params.payload.body) prepared.body = params.bodySchema.parse(params.payload.body) as BodyParams;
+    if (params.payload?.query) prepared.query = params.querySchema.parse(params.payload.query);
+    if (params.payload?.body) prepared.body = params.bodySchema.parse(params.payload.body);
 
     const base = `https://${this.baseAPI}.alpaca.markets/`;
     const url = new URL(params.endpoint, base);
@@ -53,7 +53,7 @@ export abstract class AlpacaClient {
     if (response.status === params.okStatus) return params.responseSchema.parse(await response.json());
 
     throw new Error(
-      params.statusMessages[response.status] ??
+      params.statusMessages?.[response.status] ??
         `${params.name}: Undocumented response ${response.status}: ${response.statusText}`
     );
   }
