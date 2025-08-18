@@ -1,9 +1,10 @@
 import { AlpacaClient } from "../client.ts";
+import StockModule from "./stock.ts";
 
 export class MarketClient extends AlpacaClient {
   protected override baseAPI = "data";
 
-  // Stock
+  stock = StockModule(this);
   // Option
   // Crypto
   // Fixed Income
