@@ -1,5 +1,5 @@
 import { Z } from "../external.ts";
-import TradingClient from "./mod.ts";
+import { AlpacaAuth, endpoint } from "../mod.ts";
 import {
   Asset,
   AssetSchema,
@@ -17,12 +17,14 @@ import {
   TreasuriesQuery,
 } from "./schemas.ts";
 
-const assets = (client: TradingClient) => ({
+const assets = (auth: AlpacaAuth, paper: boolean) => ({
   get: (symbol_or_asset_id: string): Promise<Asset> =>
-    client.fetch({
+    endpoint({
       name: "Get Asset",
       endpoint: `v2/assets/${symbol_or_asset_id}`,
       method: "GET",
+      api: paper ? "paper-api" : "live",
+      auth,
 
       querySchema: Z.never(),
       bodySchema: Z.never(),
@@ -32,13 +34,36 @@ const assets = (client: TradingClient) => ({
       statusMessages: {
         404: `Asset Not Found: ${symbol_or_asset_id}`,
       },
+
+      payload: {},
+    }),
+
+  getBySymbol: (symbol_or_asset_id: string): Promise<Asset> =>
+    endpoint({
+      name: "Get Asset By Symbol",
+      endpoint: `v2/assets/symbols/${symbol_or_asset_id}`,
+      method: "GET",
+      api: paper ? "paper-api" : "live",
+      auth,
+      querySchema: Z.never(),
+      bodySchema: Z.never(),
+      responseSchema: AssetSchema,
+
+      okStatus: 200,
+      statusMessages: {
+        404: `Asset Not Found: ${symbol_or_asset_id}`,
+      },
+
+      payload: {},
     }),
 
   all: (query: AssetsQuery): Promise<Asset[]> =>
-    client.fetch({
+    endpoint({
       name: "Get Assets",
       endpoint: "v2/assets",
       method: "GET",
+      api: paper ? "paper-api" : "live",
+      auth,
 
       querySchema: AssetsQuerySchema,
       bodySchema: Z.never(),
@@ -88,28 +113,28 @@ const options = (client: TradingClient) => ({
     }),
 });
 
-export default (client: TradingClient) => ({
-  assets: assets(client),
-  crypto: crypto(client),
-  options: options(client),
+export default (auth: AlpacaAuth, paper: boolean) => ({
+  assets: assets(auth, paper),
+  crypto: crypto(auth, paper),
+  options: options(auth, paper),
 
-  treasuries: (query: TreasuriesQuery): Promise<Treasury[]> =>
-    client.fetch({
-      name: "Get Treasuries",
-      endpoint: "v2/treasuries",
-      method: "GET",
+  treasuries: endpoint({
+    name: "Get Treasuries",
+    endpoint: "v2/treasuries",
+    method: "GET",
+    api: paper ? "paper-api" : "live",
+    auth,
 
-      querySchema: TreasuriesQuerySchema,
-      bodySchema: Z.never(),
-      responseSchema: TreasuriesQueryResponseSchema,
+    querySchema: TreasuriesQuerySchema,
+    bodySchema: Z.never(),
+    responseSchema: TreasuriesQueryResponseSchema,
 
-      okStatus: 200,
-      statusMessages: {
-        400: "Bad Request",
-        403: "Forbidden",
-        429: "Too Many Requests",
-        500: "Internal Server Error",
-      },
-      payload: { query },
-    }),
+    okStatus: 200,
+    statusMessages: {
+      400: "Bad Request",
+      403: "Forbidden",
+      429: "Too Many Requests",
+      500: "Internal Server Error",
+    },
+  }),
 });

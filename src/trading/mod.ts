@@ -1,26 +1,26 @@
-import { AlpacaClient } from "../client.ts";
 import { Z } from "../external.ts";
-import TradingAccountModule from "./accounts.ts";
-import TradingInstrumentsModule from "./instruments.ts";
-import TradingOrdersModule from "./orders.ts";
-import TradingPositionsModule from "./position.ts";
-import { CalendarQuery, Calendar, CalendarQuerySchema, CalendarSchema, Clock, ClockSchema } from "./schemas.ts";
-import TradingWatchlistsModule from "./watchlists.ts";
+import { AlpacaAuth, endpoint } from "../mod.ts";
+import tradingAccounts from "./accounts.ts";
+import tradingInstruments from "./instruments.ts";
+import tradingOrders from "./orders.ts";
+import tradingPositions from "./position.ts";
+import tradingWatchlists from "./watchlists.ts";
+import { Calendar, CalendarQuery, CalendarQuerySchema, CalendarSchema, Clock, ClockSchema } from "./schemas.ts";
 
-export default class TradingClient extends AlpacaClient {
-  protected override baseAPI = this.alpaca.config.paper ? "paper-api" : "live";
+export const trading = (auth: AlpacaAuth, paper: boolean) => ({
+  account: tradingAccounts(auth, paper),
+  instruments: tradingInstruments(auth, paper),
+  orders: tradingOrders(auth, paper),
+  positions: tradingPositions(auth, paper),
+  watchlists: tradingWatchlists(auth, paper),
 
-  public readonly account = TradingAccountModule(this);
-  public readonly instruments = TradingInstrumentsModule(this);
-  public readonly orders = TradingOrdersModule(this);
-  public readonly positions = TradingPositionsModule(this);
-  public readonly watchlists = TradingWatchlistsModule(this);
-
-  public calendar(query: CalendarQuery = {}): Promise<Calendar> {
-    return this.fetch({
+  calendar: (query: CalendarQuery): Promise<Calendar> =>
+    endpoint({
       name: "Get Market Calendar",
       endpoint: "v2/calendar",
       method: "GET",
+      api: paper ? "paper-api" : "live",
+      auth,
 
       querySchema: CalendarQuerySchema,
       bodySchema: Z.never(),
@@ -29,20 +29,22 @@ export default class TradingClient extends AlpacaClient {
       okStatus: 200,
 
       payload: { query },
-    });
-  }
+    }),
 
-  public clock(): Promise<Clock> {
-    return this.fetch({
+  clock: (): Promise<Clock> =>
+    endpoint({
       name: "Get Market Clock",
       endpoint: "v2/clock",
       method: "GET",
+      api: paper ? "paper-api" : "live",
+      auth,
 
       querySchema: Z.never(),
       bodySchema: Z.never(),
       responseSchema: ClockSchema,
 
       okStatus: 200,
-    });
-  }
-}
+
+      payload: {},
+    }),
+});

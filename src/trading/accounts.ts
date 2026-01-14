@@ -1,5 +1,5 @@
 import { Z } from "../external.ts";
-import TradingClient from "./mod.ts";
+import { AlpacaAuth, endpoint } from "../mod.ts";
 import {
   Account,
   HistoryQuery,
@@ -12,22 +12,22 @@ import {
   AccountConfigBody,
 } from "./schemas.ts";
 
-export default (client: TradingClient) => ({
-  get: (): Promise<Account> =>
-    client.fetch({
-      name: "Get Account",
-      endpoint: "v2/account",
-      method: "GET",
+export default (auth: AlpacaAuth, paper: boolean) => ({
+  get: endpoint({
+    name: "Get Account",
+    endpoint: "v2/account",
+    method: "GET",
+    api: ,
+    auth,
 
-      querySchema: Z.never(),
-      bodySchema: Z.never(),
-      responseSchema: AccountSchema,
+    querySchema: Z.never(),
+    bodySchema: Z.never(),
+    responseSchema: AccountSchema,
 
-      okStatus: 200,
-    }),
+    okStatus: 200,
+  }),
 
-  history: (query: HistoryQuery): Promise<History> =>
-    client.fetch({
+  history: endpoint({
       name: "Get Account Portfolio History",
       endpoint: "v2/account/portfolio/history",
       method: "GET",
