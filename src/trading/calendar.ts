@@ -1,5 +1,5 @@
 import { Z } from "../external.ts";
-import { Endpoint } from "../client.ts";
+import type { Endpoint } from "../client.ts";
 import { CalendarDateType, CalendarQuerySchema, CalendarSchema, ClockSchema } from "./schemas.ts";
 
 export const getCalendar = {
@@ -8,6 +8,7 @@ export const getCalendar = {
   method: "GET",
   path: "v2/calendar",
 
+  params: Z.never(),
   query: CalendarQuerySchema,
   body: Z.never(),
   response: CalendarSchema,
@@ -23,6 +24,7 @@ export const getClock = {
   method: "GET",
   path: "v2/clock",
 
+  params: Z.never(),
   query: Z.never(),
   body: Z.never(),
   response: ClockSchema,
