@@ -1,3 +1,4 @@
+export { Z } from "./external.ts";
 export * from "./client.ts";
 export { tradingEndpoints } from "./trading/mod.ts";
 export { marketEndpoints } from "./market/mod.ts";

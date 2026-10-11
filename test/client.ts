@@ -165,6 +165,30 @@ Deno.test("request validates before sending", async () => {
   });
 });
 
+Deno.test("args may leave optional parts undefined", async () => {
+  const getQuote = {
+    name: "Get Quote",
+    api: "data",
+    method: "GET",
+    path: "v2/stocks/{symbol}/quotes/latest",
+
+    params: Z.object({ symbol: Z.string() }),
+    query: Z.object({ feed: Z.enum(["iex", "sip"]).optional() }),
+    body: Z.never(),
+    response: Z.object({ symbol: Z.string() }),
+
+    okStatus: 200,
+
+    args: (symbol: string, query?: { feed?: "iex" | "sip" }) => ({ params: { symbol }, query }),
+  } satisfies Endpoint;
+
+  await withStubbedFetch(() => json({ symbol: "AAPL" }), async (requests) => {
+    const client = new Alpaca({ auth: keys });
+    assertEquals(await client.request(getQuote, "AAPL"), { symbol: "AAPL" });
+    assertEquals(requests[0].url.search, "");
+  });
+});
+
 Deno.test({ name: "live: request clock", ignore: !auth }, async () => {
   const { request } = live; // destructured on purpose: checks `this` survives
   const clock = await request(tradingEndpoints.clock);

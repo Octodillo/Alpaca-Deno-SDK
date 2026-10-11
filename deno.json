@@ -6,7 +6,8 @@
   "fmt": {
     "indentWidth": 2,
     "singleQuote": false,
-    "lineWidth": 120
+    "lineWidth": 120,
+    "exclude": ["spec/"]
   },
   "tasks": {
     "check": "deno check src/ test/",

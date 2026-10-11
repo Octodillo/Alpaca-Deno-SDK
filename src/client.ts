@@ -142,7 +142,9 @@ export class Alpaca {
 
   async #send<E extends Endpoint>(endpoint: E, payload: Payload<E>): Promise<Response<E>> {
     const parts = payload as Partial<Record<keyof Parts<E>, unknown>>;
-    const params: PathParams = "params" in parts ? endpoint.params.parse(parts.params) : {};
+    // `args` may set an optional part to undefined, which means leaving it out
+    const has = (part: keyof Parts<E>) => parts[part] !== undefined;
+    const params: PathParams = has("params") ? endpoint.params.parse(parts.params) : {};
     const path = endpoint.path.replace(/\{(\w+)\}/g, (_, key: string) => {
       const value = params[key];
       if (value === undefined || value === null || value === "") {
@@ -156,7 +158,7 @@ export class Alpaca {
     const headers: Record<string, string> = { accept: "application/json", ...this.#authHeaders(endpoint.api) };
     const requestInit: RequestInit = { method: endpoint.method, headers };
 
-    if ("query" in parts) {
+    if (has("query")) {
       const query = endpoint.query.parse(parts.query);
       Object.entries(query).forEach(([key, value]) => {
         const values = (Array.isArray(value) ? value : [value]).filter((v) => v !== undefined && v !== null);
@@ -164,13 +166,13 @@ export class Alpaca {
       });
     }
 
-    if ("headers" in parts && endpoint.headers) {
+    if (has("headers") && endpoint.headers) {
       Object.entries(endpoint.headers.parse(parts.headers)).forEach(([key, value]) => {
         if (value !== undefined) headers[key] = value;
       });
     }
 
-    if ("body" in parts) {
+    if (has("body")) {
       headers["content-type"] = "application/json";
       requestInit.body = JSON.stringify(endpoint.body.parse(parts.body));
     }
