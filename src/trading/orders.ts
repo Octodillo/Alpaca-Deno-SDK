@@ -1,5 +1,5 @@
 import { Z } from "../external.ts";
-import TradingClient from "./mod.ts";
+import { TradingClient } from "./mod.ts";
 import {
   CreateOrderBody,
   Order,

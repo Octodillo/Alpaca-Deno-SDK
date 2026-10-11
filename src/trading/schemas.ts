@@ -534,11 +534,12 @@ export type CalendarDay = Z.infer<typeof CalendarDaySchema>;
 export const CalendarSchema = Z.array(CalendarDaySchema);
 export type Calendar = Z.infer<typeof CalendarSchema>;
 
+// Clock timestamps carry an exchange-local offset and variable precision, unlike order timestamps
 export const ClockSchema = Z.object({
-  timestamp: AlpacaDateTimeSchema,
+  timestamp: Z.iso.datetime({ offset: true }),
   is_open: Z.boolean(),
-  next_open: AlpacaDateTimeSchema,
-  next_close: AlpacaDateTimeSchema,
+  next_open: Z.iso.datetime({ offset: true }),
+  next_close: Z.iso.datetime({ offset: true }),
 });
 export type Clock = Z.infer<typeof ClockSchema>;
 

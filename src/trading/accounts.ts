@@ -13,24 +13,29 @@ import {
 } from "./schemas.ts";
 
 export default (auth: AlpacaAuth, paper: boolean) => ({
-  get: endpoint({
-    name: "Get Account",
-    endpoint: "v2/account",
-    method: "GET",
-    api: ,
-    auth,
+  get: () =>
+    endpoint({
+      name: "Get Account",
+      endpoint: "v2/account",
+      method: "GET",
+      api: paper ? "paper-api" : "live",
+      auth,
 
-    querySchema: Z.never(),
-    bodySchema: Z.never(),
-    responseSchema: AccountSchema,
+      querySchema: Z.never(),
+      bodySchema: Z.never(),
+      responseSchema: AccountSchema,
 
-    okStatus: 200,
-  }),
+      okStatus: 200,
+      payload: {},
+    }),
 
-  history: endpoint({
+  history: () =>
+    endpoint({
       name: "Get Account Portfolio History",
       endpoint: "v2/account/portfolio/history",
       method: "GET",
+      api: paper ? "paper-api" : "live",
+      auth,
 
       querySchema: HistoryQuerySchema,
       bodySchema: Z.never(),
