@@ -13,6 +13,6 @@
     "test": "deno test -A test/*.ts",
     "fmt": "deno fmt",
     "lint": "deno lint",
-    "generate": "deno run --allow-read --allow-write --allow-net scripts/generate.ts"
+    "generate": "deno run --allow-read --allow-write --allow-net scripts/generate.ts && deno fmt -q src/generated/"
   }
 }
