@@ -4334,10 +4334,10 @@ export const FPSLAnalyticsLoansResponseSchema = Z.object({
   /** Account's number at Alpaca */
   account_number: Z.string(),
   /** The number of FPSL lending activities currently in progress for the account. */
-  in_progress_lending_activities: Z.number().int(),
+  in_progress_lending_activities: Z.number(),
   interest: FPSLInterestSchema.optional(),
   /** The total number of FPSL lending activities for the account within the specified date range. */
-  total_lending_activities: Z.number().int(),
+  total_lending_activities: Z.number(),
 });
 export type FPSLAnalyticsLoansResponse = Z.output<typeof FPSLAnalyticsLoansResponseSchema>;
 
@@ -4362,7 +4362,7 @@ export const FPSLLoanSchema = Z.object({
   /** The total market value of the shares on loan. */
   market_value: Z.number(),
   /** The number of shares in the loan. This may be less than the total number of eligible shares held by the account. */
-  quantity: Z.number().int(),
+  quantity: Z.number(),
   /** Stock/Ticker symbol of a stock or security */
   symbol: Z.string(),
   /** Timestamp of the last update to this loan in RFC-3339 format with microsecond precision with timezone. An updated value may indicate adjusted interest values. */
@@ -4534,7 +4534,7 @@ export type IPOEvent = Z.output<typeof IPOEventSchema>;
 /** An IPO (Initial Public Offering) offering exposed via the IPO discovery REST API. Returned by `GET /v1/ipos` and `GET /v1/ipos/{offering_reference}`. */
 export const IPOOfferingSchema = Z.object({
   /** Anticipated total share count for the offering, when known. */
-  anticipated_shares: Z.number().int().optional(),
+  anticipated_shares: Z.number().optional(),
   /** Whether the offering is currently accepting orders. - `available` - accepting new orders. - `not_available` - not yet open for orders. - `closed` - no longer accepting orders. */
   availability: Z.enum(["available", "not_available", "closed"]),
   /** CUSIP identifier of the offering. */

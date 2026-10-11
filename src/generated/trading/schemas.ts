@@ -1938,7 +1938,7 @@ export const CreateLocateRequestSchema = Z.object({
   /** Maximum acceptable locate fee per share, as a decimal string in USD. If omitted, any quoted fee is accepted. */
   limit_price: Z.string().nullable().optional(),
   /** Number of shares to locate. Must be positive and in round lots of 100; invalid quantities return HTTP 400. */
-  qty: Z.number().int(),
+  qty: Z.number(),
   /** Stock symbol. */
   symbol: Z.string(),
 });
@@ -2157,7 +2157,7 @@ export type LocateQuoteError = Z.output<typeof LocateQuoteErrorSchema>;
 /** Current locate pricing and availability for a symbol. */
 export const LocateQuoteSchema = Z.object({
   /** Available locate quantity. */
-  available_qty: Z.number().int(),
+  available_qty: Z.number(),
   /** Locate fee per share. Omitted when no quantity is available. */
   price: Z.string().optional(),
   /** Time when the quote was issued. */
@@ -2195,11 +2195,11 @@ export const LocateSchema = Z.object({
   /** Locate fee per share in USD. Omitted when rejected. */
   located_price: Z.string().nullable().optional(),
   /** Number of shares located. Omitted when rejected. */
-  located_qty: Z.number().int().nullable().optional(),
+  located_qty: Z.number().nullable().optional(),
   /** Machine-readable rejection reason. */
   rejection_reason: Z.string().nullable().optional(),
   /** Number of shares requested. */
-  requested_qty: Z.number().int(),
+  requested_qty: Z.number(),
   status: LocateStatusSchema,
   /** Stock symbol. */
   symbol: Z.string(),

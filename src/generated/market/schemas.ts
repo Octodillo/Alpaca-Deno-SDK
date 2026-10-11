@@ -1006,7 +1006,7 @@ export const CryptoBarSchema = Z.object({
   /** Low price. */
   l: Z.number(),
   /** Trade count in the bar. */
-  n: Z.number().int(),
+  n: Z.number(),
   /** Opening price. */
   o: Z.number(),
   t: TimestampSchema,
@@ -1080,7 +1080,7 @@ export type CryptoLatestQuotesResp = Z.output<typeof CryptoLatestQuotesRespSchem
 /** A crypto trade. */
 export const CryptoTradeSchema = Z.object({
   /** Trade ID. */
-  i: Z.number().int(),
+  i: Z.number(),
   /** Trade price. */
   p: Z.number(),
   /** Trade size. */
@@ -1152,21 +1152,21 @@ export type FixedIncomeLatestPricesResp = Z.output<typeof FixedIncomeLatestPrice
 /** The best bid and ask information for a given fixed income security. A value of 0 means there is no active bid or ask for that field. */
 export const FixedIncomeQuoteSchema = Z.object({
   /** Best ask minimum trade size in par value. */
-  ams: Z.number().int(),
+  ams: Z.number(),
   /** Best ask price. 0 means there is no active ask. */
   ap: Z.number(),
   /** Best ask size in par value. 0 means there is no active ask. */
-  as: Z.number().int(),
+  as: Z.number(),
   /** Best ask yield to maturity. */
   aytm: Z.number(),
   /** Best ask yield to worst. */
   aytw: Z.number(),
   /** Best bid minimum trade size in par value. */
-  bms: Z.number().int(),
+  bms: Z.number(),
   /** Best bid price. 0 means there is no active bid. */
   bp: Z.number(),
   /** Best bid size in par value. 0 means there is no active bid. */
-  bs: Z.number().int(),
+  bs: Z.number(),
   /** Best bid yield to maturity. */
   bytm: Z.number(),
   /** Best bid yield to worst. */
@@ -1222,9 +1222,9 @@ export type MarketType = Z.output<typeof MarketTypeSchema>;
 export const MostActiveSchema = Z.object({
   symbol: Z.string(),
   /** Cumulative trade count for the current trading day. */
-  trade_count: Z.number().int(),
+  trade_count: Z.number(),
   /** Cumulative volume for the current trading day. */
-  volume: Z.number().int(),
+  volume: Z.number(),
 });
 export type MostActive = Z.output<typeof MostActiveSchema>;
 
@@ -1281,7 +1281,7 @@ export const NewsSchema = Z.object({
   /** Headline or title of the article. */
   headline: Z.string(),
   /** News article ID. */
-  id: Z.number().int(),
+  id: Z.number(),
   /** List of images (URLs) related to given article (may be empty). */
   images: Z.array(NewsImageSchema),
   /** Source where the news originated from (e.g. Benzinga). */
@@ -1312,12 +1312,12 @@ export const OptionBarSchema = Z.object({
   /** Low price. */
   l: Z.number(),
   /** Trade count in the bar. */
-  n: Z.number().int(),
+  n: Z.number(),
   /** Opening price. */
   o: Z.number(),
   t: TimestampSchema,
   /** Bar volume. */
-  v: Z.number().int(),
+  v: Z.number(),
   /** Volume weighted average price. */
   vw: Z.number(),
 });
@@ -1433,7 +1433,7 @@ export const StockAuctionSchema = Z.object({
   /** Auction price. */
   p: Z.number(),
   /** Auction trade size. */
-  s: Z.number().int().optional(),
+  s: Z.number().optional(),
   t: TimestampSchema,
   /** Exchange code. See `v2/stocks/meta/exchanges` for more details. */
   x: Z.string(),
@@ -1446,10 +1446,10 @@ export type StockAuctionFeed = Z.output<typeof StockAuctionFeedSchema>;
 /** Opening and closing auction prices for a given day. */
 export const StockDailyAuctionsSchema = Z.object({
   /** Closing auctions. Every price / exchange / condition triplet is only shown once, with its earliest timestamp. */
-  c: Z.array(StockAuctionSchema),
+  c: Z.array(StockAuctionSchema).nullable(),
   d: DateSchema,
   /** Opening auctions. */
-  o: Z.array(StockAuctionSchema),
+  o: Z.array(StockAuctionSchema).nullable(),
 });
 export type StockDailyAuctions = Z.output<typeof StockDailyAuctionsSchema>;
 
@@ -1477,12 +1477,12 @@ export const StockBarSchema = Z.object({
   /** Low price. */
   l: Z.number(),
   /** Trade count in the bar. */
-  n: Z.number().int(),
+  n: Z.number(),
   /** Opening price. */
   o: Z.number(),
   t: TimestampSchema,
   /** Bar volume. */
-  v: Z.number().int(),
+  v: Z.number(),
   /** Volume weighted average price. */
   vw: Z.number(),
 });
@@ -1571,7 +1571,7 @@ export const StockTradeSchema = Z.object({
   /** Condition flags. See `v2/stocks/meta/conditions/trade` for more details. */
   c: Z.array(Z.string()),
   /** Trade ID sent by the exchange. */
-  i: Z.number().int(),
+  i: Z.number(),
   /** Trade price. */
   p: Z.number(),
   /** Trade size. */

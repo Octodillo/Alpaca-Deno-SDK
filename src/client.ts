@@ -90,15 +90,18 @@ type Bound<T> = {
   [K in keyof T]: T[K] extends Endpoint ? (...args: Args<T[K]>) => Promise<Response<T[K]>> : Bound<T[K]>;
 };
 
+/** A namespace tree in which every endpoint's `args` produces that endpoint's own payload. */
+type CheckedTree<T> = { [K in keyof T]: T[K] extends Endpoint ? Checked<T[K]> : CheckedTree<T[K]> };
+
 // Never name a namespace key `okStatus`
 const isEndpoint = (value: object): value is Checked<Endpoint> => "okStatus" in value;
 
-const bindAll = <T extends object>(client: Alpaca, tree: T): Bound<T> =>
+const bindTree = (client: Alpaca, tree: object): object =>
   Object.fromEntries(
-    Object.entries(tree).map((
-      [key, value],
-    ) => [key, isEndpoint(value) ? client.bind(value) : bindAll(client, value)]),
-  ) as Bound<T>;
+    Object.entries(tree).map(([key, value]) => [key, isEndpoint(value) ? client.bind(value) : bindTree(client, value)]),
+  );
+
+const bindAll = <T extends object>(client: Alpaca, tree: T & CheckedTree<T>) => bindTree(client, tree) as Bound<T>;
 
 const hosts = {
   trading: { paper: "paper-api", live: "api" },

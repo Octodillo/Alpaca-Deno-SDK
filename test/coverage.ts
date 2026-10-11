@@ -3,6 +3,8 @@ import { assertEquals } from "@std/assert";
 import type { Endpoint } from "../src/client.ts";
 import * as trading from "../src/generated/trading/endpoints.ts";
 import { tradingEndpoints } from "../src/trading/mod.ts";
+import * as market from "../src/generated/market/endpoints.ts";
+import { marketEndpoints } from "../src/market/mod.ts";
 
 const key = (endpoint: Endpoint) => `${endpoint.method} ${endpoint.path}`;
 
@@ -21,4 +23,8 @@ const missing = (generated: Record<string, Endpoint>, namespace: object) => {
 
 Deno.test("coverage: trading", () => {
   assertEquals(missing(trading, tradingEndpoints), []);
+});
+
+Deno.test("coverage: market", () => {
+  assertEquals(missing(market, marketEndpoints), []);
 });

@@ -92,6 +92,20 @@ export const overrides: Record<"trading" | "market" | "broker", Overrides> = {
       },
     },
   },
-  market: {},
+  market: {
+    parameters: {
+      // Same as trading's: the spec says date-time, the API also takes plain dates
+      start: (parameter) => void (parameter.schema = dateOrDateTime),
+      end: (parameter) => void (parameter.schema = dateOrDateTime),
+    },
+    schemas: {
+      // When a page ends between a day's opening and closing auctions, the other side is null
+      stock_daily_auctions: (schema) => {
+        for (const side of ["o", "c"]) {
+          schema.properties![side] = { ...schema.properties![side], type: ["array", "null"] };
+        }
+      },
+    },
+  },
   broker: {},
 };

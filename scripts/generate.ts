@@ -177,6 +177,9 @@ class ZodWriter {
       case "number":
         // Alpaca sends decimals as strings
         if (schema.format === "decimal") return "Z.string()";
+        // 64-bit IDs (crypto trade ids) exceed 2^53, where `.int()` rejects them; JSON.parse has already
+        // rounded them anyway
+        if (schema.format === "int64" || schema.format === "uint64") return "Z.number()";
         return type === "integer" ? "Z.number().int()" : "Z.number()";
       case "boolean":
         return "Z.boolean()";

@@ -63,8 +63,8 @@ export const rates = {
   query: Z.object({
     currency_pairs: S.ForexCurrencyPairsSchema,
     timeframe: S.ForexTimeframeSchema.optional(),
-    start: Z.iso.datetime({ offset: true }).optional(),
-    end: Z.iso.datetime({ offset: true }).optional(),
+    start: Z.union([Z.iso.date(), Z.iso.datetime({ offset: true })]).optional(),
+    end: Z.union([Z.iso.date(), Z.iso.datetime({ offset: true })]).optional(),
     limit: Z.number().int().optional(),
     sort: S.SortSchema.optional(),
     page_token: Z.string().optional(),
@@ -86,8 +86,8 @@ export const news = {
 
   params: Z.never(),
   query: Z.object({
-    start: Z.iso.datetime({ offset: true }).optional(),
-    end: Z.iso.datetime({ offset: true }).optional(),
+    start: Z.union([Z.iso.date(), Z.iso.datetime({ offset: true })]).optional(),
+    end: Z.union([Z.iso.date(), Z.iso.datetime({ offset: true })]).optional(),
     sort: Z.enum(["asc", "desc"]).optional(),
     symbols: Z.string().optional(),
     limit: Z.number().int().optional(),
@@ -114,8 +114,8 @@ export const optionBars = {
   query: Z.object({
     symbols: Z.string(),
     timeframe: Z.string(),
-    start: Z.iso.datetime({ offset: true }).optional(),
-    end: Z.iso.datetime({ offset: true }).optional(),
+    start: Z.union([Z.iso.date(), Z.iso.datetime({ offset: true })]).optional(),
+    end: Z.union([Z.iso.date(), Z.iso.datetime({ offset: true })]).optional(),
     limit: Z.number().int().optional(),
     page_token: Z.string().optional(),
     sort: S.SortSchema.optional(),
@@ -229,8 +229,8 @@ export const optionTrades = {
   params: Z.never(),
   query: Z.object({
     symbols: Z.string(),
-    start: Z.iso.datetime({ offset: true }).optional(),
-    end: Z.iso.datetime({ offset: true }).optional(),
+    start: Z.union([Z.iso.date(), Z.iso.datetime({ offset: true })]).optional(),
+    end: Z.union([Z.iso.date(), Z.iso.datetime({ offset: true })]).optional(),
     limit: Z.number().int().optional(),
     page_token: Z.string().optional(),
     sort: S.SortSchema.optional(),
@@ -301,8 +301,8 @@ export const cryptoBars = {
   query: Z.object({
     symbols: Z.string(),
     timeframe: Z.string(),
-    start: Z.iso.datetime({ offset: true }).optional(),
-    end: Z.iso.datetime({ offset: true }).optional(),
+    start: Z.union([Z.iso.date(), Z.iso.datetime({ offset: true })]).optional(),
+    end: Z.union([Z.iso.date(), Z.iso.datetime({ offset: true })]).optional(),
     limit: Z.number().int().optional(),
     page_token: Z.string().optional(),
     sort: S.SortSchema.optional(),
@@ -383,8 +383,8 @@ export const cryptoQuotes = {
   params: Z.object({ loc: S.CryptoHistoricalLocSchema }),
   query: Z.object({
     symbols: Z.string(),
-    start: Z.iso.datetime({ offset: true }).optional(),
-    end: Z.iso.datetime({ offset: true }).optional(),
+    start: Z.union([Z.iso.date(), Z.iso.datetime({ offset: true })]).optional(),
+    end: Z.union([Z.iso.date(), Z.iso.datetime({ offset: true })]).optional(),
     limit: Z.number().int().optional(),
     page_token: Z.string().optional(),
     sort: S.SortSchema.optional(),
@@ -420,8 +420,8 @@ export const cryptoTrades = {
   params: Z.object({ loc: S.CryptoHistoricalLocSchema }),
   query: Z.object({
     symbols: Z.string(),
-    start: Z.iso.datetime({ offset: true }).optional(),
-    end: Z.iso.datetime({ offset: true }).optional(),
+    start: Z.union([Z.iso.date(), Z.iso.datetime({ offset: true })]).optional(),
+    end: Z.union([Z.iso.date(), Z.iso.datetime({ offset: true })]).optional(),
     limit: Z.number().int().optional(),
     page_token: Z.string().optional(),
     sort: S.SortSchema.optional(),
@@ -472,8 +472,8 @@ export const stockAuctionSingle = {
 
   params: Z.object({ symbol: Z.string() }),
   query: Z.object({
-    start: Z.iso.datetime({ offset: true }).optional(),
-    end: Z.iso.datetime({ offset: true }).optional(),
+    start: Z.union([Z.iso.date(), Z.iso.datetime({ offset: true })]).optional(),
+    end: Z.union([Z.iso.date(), Z.iso.datetime({ offset: true })]).optional(),
     limit: Z.number().int().optional(),
     asof: Z.string().optional(),
     feed: S.StockAuctionFeedSchema.optional(),
@@ -497,8 +497,8 @@ export const stockBarSingle = {
   params: Z.object({ symbol: Z.string() }),
   query: Z.object({
     timeframe: Z.string(),
-    start: Z.iso.datetime({ offset: true }).optional(),
-    end: Z.iso.datetime({ offset: true }).optional(),
+    start: Z.union([Z.iso.date(), Z.iso.datetime({ offset: true })]).optional(),
+    end: Z.union([Z.iso.date(), Z.iso.datetime({ offset: true })]).optional(),
     limit: Z.number().int().optional(),
     adjustment: Z.string().optional(),
     asof: Z.string().optional(),
@@ -537,8 +537,8 @@ export const stockQuoteSingle = {
 
   params: Z.object({ symbol: Z.string() }),
   query: Z.object({
-    start: Z.iso.datetime({ offset: true }).optional(),
-    end: Z.iso.datetime({ offset: true }).optional(),
+    start: Z.union([Z.iso.date(), Z.iso.datetime({ offset: true })]).optional(),
+    end: Z.union([Z.iso.date(), Z.iso.datetime({ offset: true })]).optional(),
     limit: Z.number().int().optional(),
     asof: Z.string().optional(),
     feed: S.StockHistoricalFeedSchema.optional(),
@@ -591,8 +591,8 @@ export const stockTradeSingle = {
 
   params: Z.object({ symbol: Z.string() }),
   query: Z.object({
-    start: Z.iso.datetime({ offset: true }).optional(),
-    end: Z.iso.datetime({ offset: true }).optional(),
+    start: Z.union([Z.iso.date(), Z.iso.datetime({ offset: true })]).optional(),
+    end: Z.union([Z.iso.date(), Z.iso.datetime({ offset: true })]).optional(),
     limit: Z.number().int().optional(),
     asof: Z.string().optional(),
     feed: S.StockHistoricalFeedSchema.optional(),
@@ -631,8 +631,8 @@ export const stockAuctions = {
   params: Z.never(),
   query: Z.object({
     symbols: Z.string(),
-    start: Z.iso.datetime({ offset: true }).optional(),
-    end: Z.iso.datetime({ offset: true }).optional(),
+    start: Z.union([Z.iso.date(), Z.iso.datetime({ offset: true })]).optional(),
+    end: Z.union([Z.iso.date(), Z.iso.datetime({ offset: true })]).optional(),
     limit: Z.number().int().optional(),
     asof: Z.string().optional(),
     feed: S.StockAuctionFeedSchema.optional(),
@@ -657,8 +657,8 @@ export const stockBars = {
   query: Z.object({
     symbols: Z.string(),
     timeframe: Z.string(),
-    start: Z.iso.datetime({ offset: true }).optional(),
-    end: Z.iso.datetime({ offset: true }).optional(),
+    start: Z.union([Z.iso.date(), Z.iso.datetime({ offset: true })]).optional(),
+    end: Z.union([Z.iso.date(), Z.iso.datetime({ offset: true })]).optional(),
     limit: Z.number().int().optional(),
     adjustment: Z.string().optional(),
     asof: Z.string().optional(),
@@ -728,8 +728,8 @@ export const stockQuotes = {
   params: Z.never(),
   query: Z.object({
     symbols: Z.string(),
-    start: Z.iso.datetime({ offset: true }).optional(),
-    end: Z.iso.datetime({ offset: true }).optional(),
+    start: Z.union([Z.iso.date(), Z.iso.datetime({ offset: true })]).optional(),
+    end: Z.union([Z.iso.date(), Z.iso.datetime({ offset: true })]).optional(),
     limit: Z.number().int().optional(),
     asof: Z.string().optional(),
     feed: S.StockHistoricalFeedSchema.optional(),
@@ -783,8 +783,8 @@ export const stockTrades = {
   params: Z.never(),
   query: Z.object({
     symbols: Z.string(),
-    start: Z.iso.datetime({ offset: true }).optional(),
-    end: Z.iso.datetime({ offset: true }).optional(),
+    start: Z.union([Z.iso.date(), Z.iso.datetime({ offset: true })]).optional(),
+    end: Z.union([Z.iso.date(), Z.iso.datetime({ offset: true })]).optional(),
     limit: Z.number().int().optional(),
     asof: Z.string().optional(),
     feed: S.StockHistoricalFeedSchema.optional(),
