@@ -227,15 +227,14 @@ export const HistorySchema = Z.object({
   // "HAS ADDITIONAL FIELDS" ?!?!
 })
   // pointedly not strict
-  .transform(h => ({
+  .transform((h) => ({
     frames: h.timestamp.map(
-      (timestamp, i) =>
-        ({
-          timestamp,
-          equity: h.equity[i],
-          profit_loss: h.profit_loss[i],
-          profit_loss_pct: h.profit_loss_pct[i],
-        } satisfies HistoryElement)
+      (timestamp, i) => ({
+        timestamp,
+        equity: h.equity[i],
+        profit_loss: h.profit_loss[i],
+        profit_loss_pct: h.profit_loss_pct[i],
+      } satisfies HistoryElement),
     ), // I'm opinionated here
     base_value: h.base_value,
     base_value_asof: h.base_value_asof,
@@ -270,7 +269,7 @@ export const AssetsQuerySchema = Z.object({
   asset_class: AssetClassSchema.optional(),
   exchange: ExchangeSchema.optional(),
   attributes: AssetAttributeSchema.array()
-    .transform(arr => arr.join(","))
+    .transform((arr) => arr.join(","))
     .optional(),
 }).strict();
 
@@ -315,7 +314,7 @@ export type OptionContractsQuery = Z.input<typeof OptionContractsQuerySchema>;
 export const OptionContractsQuerySchema = Z.object({
   underlying_symbols: Z.string()
     .array()
-    .transform(arr => arr.join(","))
+    .transform((arr) => arr.join(","))
     .optional(),
   show_deliverables: Z.boolean().optional(),
   status: ActiveStatusSchema.optional(),
@@ -336,7 +335,7 @@ export const OptionContractsQueryResponseSchema = Z.object({
   option_contracts: OptionContractSchema.array(),
 })
   .strict()
-  .transform(r => r.option_contracts); // opinionated
+  .transform((r) => r.option_contracts); // opinionated
 
 export type Treasury = Z.infer<typeof TreasurySchema>;
 export const TreasurySchema = Z.object({
@@ -369,13 +368,13 @@ export const TreasuriesQuerySchema = Z.object({
     .length(12)
     .array()
     .max(1000)
-    .transform(arr => arr.join(","))
+    .transform((arr) => arr.join(","))
     .optional(),
   isins: Z.string()
     .length(12)
     .array()
     .max(1000)
-    .transform(arr => arr.join(","))
+    .transform((arr) => arr.join(","))
     .optional(),
 }).strict();
 
@@ -383,7 +382,7 @@ export const TreasuriesQueryResponseSchema = Z.object({
   us_treasuries: TreasurySchema.array(),
 })
   .strict()
-  .transform(r => r.us_treasuries);
+  .transform((r) => r.us_treasuries);
 
 export type Position = Z.infer<typeof PositionSchema>;
 export const PositionSchema = Z.object({
@@ -499,11 +498,11 @@ export const OrdersQuerySchema = Z.object({
   nested: Z.boolean().optional(),
   symbols: Z.string()
     .array()
-    .transform(a => a.join(","))
+    .transform((a) => a.join(","))
     .optional(),
   side: OrderSideSchema.optional(),
   asset_class: AssetClassSchema.array()
-    .transform(a => a.join(","))
+    .transform((a) => a.join(","))
     .optional(),
 }).strict();
 

@@ -2,24 +2,24 @@ import { Z } from "../external.ts";
 import { CurrencySchema } from "../trading/schemas.ts";
 import { MarketClient } from "./mod.ts";
 import {
-  StockSymbol,
-  StockQuery,
-  StockQuerySchema,
+  AuctionStatsSchema,
   BarSchema,
+  HistoricalQuery,
+  HistoricalQuerySchema,
+  MultiHistoricalQuery,
+  MultiHistoricalQuerySchema,
   MultiStockQuery,
   MultiStockQuerySchema,
   QuoteSchema,
-  TradeSchema,
-  HistoricalQuery,
-  HistoricalQuerySchema,
-  AuctionStatsSchema,
-  MultiHistoricalQuery,
-  MultiHistoricalQuerySchema,
-  StockSymbolSchema,
+  StockQuery,
+  StockQuerySchema,
   StockSnapshotSchema,
-  TickType,
+  StockSymbol,
+  StockSymbolSchema,
   Tape,
   TapeSchema,
+  TickType,
+  TradeSchema,
 } from "./schema.ts";
 
 const latest = (client: MarketClient) => ({

@@ -3,18 +3,18 @@ import { AlpacaAuth, endpoint } from "../mod.ts";
 import {
   Asset,
   AssetSchema,
-  AssetsQuerySchema,
+  AssetsQuery,
   AssetsQueryResponseSchema,
+  AssetsQuerySchema,
   OptionContract,
   OptionContractSchema,
-  OptionContractsQuerySchema,
-  OptionContractsQueryResponseSchema,
-  Treasury,
-  TreasuriesQuerySchema,
-  TreasuriesQueryResponseSchema,
-  AssetsQuery,
   OptionContractsQuery,
+  OptionContractsQueryResponseSchema,
+  OptionContractsQuerySchema,
   TreasuriesQuery,
+  TreasuriesQueryResponseSchema,
+  TreasuriesQuerySchema,
+  Treasury,
 } from "./schemas.ts";
 
 const assets = (auth: AlpacaAuth, paper: boolean) => ({

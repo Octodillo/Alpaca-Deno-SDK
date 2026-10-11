@@ -2,14 +2,14 @@ import { Z } from "../external.ts";
 import { TradingClient } from "./mod.ts";
 import {
   CreateOrderBody,
-  Order,
   CreateOrderBodySchema,
-  OrderSchema,
-  OrdersQuery,
-  OrdersQuerySchema,
-  OrdersQueryResponseSchema,
   DeleteAllOrdersResponse,
   DeleteAllOrdersResponseSchema,
+  Order,
+  OrderSchema,
+  OrdersQuery,
+  OrdersQueryResponseSchema,
+  OrdersQuerySchema,
 } from "./schemas.ts";
 
 export default (client: TradingClient) => ({
@@ -60,10 +60,10 @@ export default (client: TradingClient) => ({
 
         okStatus: 207,
       })
-      .then(parsed => {
+      .then((parsed) => {
         const errors = parsed
-          .filter(order => order.status !== 200)
-          .map(order => new Error(`Delete All Orders: Failed to delete order ${order.id}: ${order.status}`));
+          .filter((order) => order.status !== 200)
+          .map((order) => new Error(`Delete All Orders: Failed to delete order ${order.id}: ${order.status}`));
         if (errors) throw new AggregateError(errors, "Delete All Orders: Some orders failed to delete");
 
         return parsed;

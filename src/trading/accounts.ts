@@ -2,14 +2,14 @@ import { Z } from "../external.ts";
 import { AlpacaAuth, endpoint } from "../mod.ts";
 import {
   Account,
-  HistoryQuery,
-  History,
-  HistoryQuerySchema,
-  HistorySchema,
-  AccountSchema,
+  AccountConfigBody,
   AccountConfigBodySchema,
   AccountConfigs,
-  AccountConfigBody,
+  AccountSchema,
+  History,
+  HistoryQuery,
+  HistoryQuerySchema,
+  HistorySchema,
 } from "./schemas.ts";
 
 export default (auth: AlpacaAuth, paper: boolean) => ({

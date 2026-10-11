@@ -1,12 +1,12 @@
 import { Z } from "../external.ts";
 import TradingClient from "./mod.ts";
 import {
-  WatchlistSchema,
   CreateWatchlistBody,
   CreateWatchlistBodySchema,
   UpdateWatchlistBody,
-  UpdateWatchlistQuerySchema,
   UpdateWatchlistBodySchema,
+  UpdateWatchlistQuerySchema,
+  WatchlistSchema,
 } from "./schemas.ts";
 
 export default (client: TradingClient) => ({

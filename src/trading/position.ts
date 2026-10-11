@@ -1,14 +1,14 @@
 import { Z } from "../external.ts";
 import TradingClient from "./mod.ts";
 import {
-  Position,
   AllPositionsResponseSchema,
-  ClosePositionResponse,
   CloseAllPositionsResponseSchema,
-  PositionSchema,
   ClosePositionQuery,
   ClosePositionQuerySchema,
+  ClosePositionResponse,
   OrderSchema,
+  Position,
+  PositionSchema,
 } from "./schemas.ts";
 
 export default (client: TradingClient) => ({
@@ -43,10 +43,10 @@ export default (client: TradingClient) => ({
 
         payload: { query: { cancel_orders } },
       })
-      .then(parsed => {
+      .then((parsed) => {
         const errors = parsed
-          .filter(r => r.status !== 200)
-          .map(r => new Error(`Close All Positions: Failed to close ${r.symbol}: ${r.status}`));
+          .filter((r) => r.status !== 200)
+          .map((r) => new Error(`Close All Positions: Failed to close ${r.symbol}: ${r.status}`));
         if (errors.length) throw new AggregateError(errors);
         return parsed;
       }),

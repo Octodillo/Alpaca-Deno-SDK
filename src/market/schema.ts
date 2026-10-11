@@ -1,5 +1,5 @@
 import { Z } from "../external.ts";
-import { AlpacaDateTimeSchema, AlpacaDateSchema, CurrencySchema } from "../trading/schemas.ts";
+import { AlpacaDateSchema, AlpacaDateTimeSchema, CurrencySchema } from "../trading/schemas.ts";
 
 export type TickType = Z.infer<typeof TickTypeSchema>;
 export const TickTypeSchema = Z.enum(["trade", "quote"]);
@@ -26,7 +26,7 @@ export const BarSchema = Z.object({
   vw: Z.number(),
 })
   .strict()
-  .transform(bar => ({
+  .transform((bar) => ({
     // opinionated
     timestamp: bar.t,
     openingPrice: bar.o,
@@ -51,7 +51,7 @@ export const QuoteSchema = Z.object({
   z: ExchangeCodeSchema,
 })
   .strict()
-  .transform(quote => ({
+  .transform((quote) => ({
     // opinionated
     timestamp: quote.t,
     bidExchange: quote.bx,
@@ -76,7 +76,7 @@ export const TradeSchema = Z.object({
   u: TradeUpdateSchema,
 })
   .strict()
-  .transform(trade => ({
+  .transform((trade) => ({
     // opinionated
     timestamp: trade.t,
     exchange: trade.x,
@@ -97,7 +97,7 @@ export const AuctionSchema = Z.object({
   c: Z.string(), // TODO: See v2/stocks/meta/conditions/auction
 })
   .strict()
-  .transform(auction => ({
+  .transform((auction) => ({
     // opinionated
     timestamp: auction.t,
     exchange: auction.x,
@@ -113,7 +113,7 @@ export const AuctionStatsSchema = Z.object({
   c: AuctionSchema.array(),
 })
   .strict()
-  .transform(auction => ({
+  .transform((auction) => ({
     // opinionated
     date: auction.d,
     opening: auction.o,
@@ -133,7 +133,7 @@ export const StockSnapshotSchema = Z.object({
 
 export type MultiStockQuery = Z.input<typeof MultiStockQuerySchema>;
 export const MultiStockQuerySchema = Z.object({
-  symbols: StockSymbolSchema.array().transform(arr => arr.join(",")),
+  symbols: StockSymbolSchema.array().transform((arr) => arr.join(",")),
   feed: StockFeedSchema.optional(),
   currency: CurrencySchema.optional(),
 }).strict();
@@ -158,7 +158,7 @@ export const HistoricalQuerySchema = Z.object({
 
 export type MultiHistoricalQuery = Z.input<typeof MultiHistoricalQuerySchema>;
 export const MultiHistoricalQuerySchema = Z.object({
-  symbols: StockSymbolSchema.array().transform(arr => arr.join(",")),
+  symbols: StockSymbolSchema.array().transform((arr) => arr.join(",")),
   start: AlpacaDateTimeSchema.optional(),
   end: AlpacaDateTimeSchema.optional(),
   limit: Z.int().min(1).max(10000).optional(),

@@ -17,11 +17,13 @@ const hosts: Record<API, { paper: string; live: string }> = {
   broker: { paper: "broker-api.sandbox", live: "broker-api" },
 };
 
-type StripNever<T> = {
-  [K in keyof T as [T[K]] extends [never] ? never : K]: T[K];
-} & {
-  [K in keyof T as [T[K]] extends [never] ? K : never]?: never;
-};
+type StripNever<T> =
+  & {
+    [K in keyof T as [T[K]] extends [never] ? never : K]: T[K];
+  }
+  & {
+    [K in keyof T as [T[K]] extends [never] ? K : never]?: never;
+  };
 
 /**
  * Static description of a single API endpoint. Holds no auth or environment, so definitions
@@ -59,11 +61,9 @@ export type Payload<E extends Endpoint> = StripNever<{
 
 export type Response<E extends Endpoint> = Z.output<E["response"]>;
 
-export type Args<E extends Endpoint> = E extends { args: (...args: infer A) => unknown }
-  ? A
-  : {} extends Payload<E>
-    ? [payload?: Payload<E>]
-    : [payload: Payload<E>];
+export type Args<E extends Endpoint> = E extends { args: (...args: infer A) => unknown } ? A
+  : {} extends Payload<E> ? [payload?: Payload<E>]
+  : [payload: Payload<E>];
 
 /** Rejects endpoints whose `args` doesn't produce that endpoint's own payload. */
 export type Checked<E extends Endpoint> = E & { args?: (...args: never[]) => Payload<E> };
@@ -86,10 +86,8 @@ export class Alpaca {
     this.#send(endpoint, (endpoint.args ? endpoint.args(...args) : (args[0] ?? {})) as Payload<E>);
 
   /** Turns an endpoint definition into a plain async function. */
-  bind =
-    <E extends Endpoint>(endpoint: Checked<E>) =>
-    (...args: Args<E>): Promise<Response<E>> =>
-      this.request(endpoint, ...args);
+  bind = <E extends Endpoint>(endpoint: Checked<E>) => (...args: Args<E>): Promise<Response<E>> =>
+    this.request(endpoint, ...args);
 
   async #send<E extends Endpoint>(endpoint: E, payload: Payload<E>): Promise<Response<E>> {
     const resolvePath = () => {
