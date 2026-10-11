@@ -1,0 +1,17 @@
+{
+  "imports": {
+    "zod": "npm:zod@4.0.14"
+  },
+  "fmt": {
+    "indentWidth": 2,
+    "singleQuote": false,
+    "lineWidth": 120
+  },
+  "tasks": {
+    "check": "deno check src/ test/",
+    "test": "deno test -A test/*.ts",
+    "fmt": "deno fmt",
+    "lint": "deno lint",
+    "generate": "deno run --allow-read --allow-write --allow-net scripts/generate.ts"
+  }
+}
