@@ -291,8 +291,8 @@ export const legacyCalendar = {
 
   params: Z.never(),
   query: Z.object({
-    start: Z.iso.datetime({ offset: true }).optional(),
-    end: Z.iso.datetime({ offset: true }).optional(),
+    start: Z.union([Z.iso.date(), Z.iso.datetime({ offset: true })]).optional(),
+    end: Z.union([Z.iso.date(), Z.iso.datetime({ offset: true })]).optional(),
     date_type: Z.enum(["TRADING", "SETTLEMENT"]).optional(),
   }),
   body: Z.never(),

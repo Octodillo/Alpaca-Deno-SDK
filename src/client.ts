@@ -1,7 +1,10 @@
 import { Z } from "./external.ts";
+import { AlpacaError } from "./errors.ts";
 import { tradingEndpoints } from "./trading/mod.ts";
 import { marketEndpoints } from "./market/mod.ts";
 import { brokerEndpoints } from "./broker/mod.ts";
+
+export { AlpacaError };
 
 export type APIMethod = "GET" | "OPTIONS" | "PUT" | "DELETE" | "POST" | "PATCH";
 export type PathParams = Record<string, string | number>;
@@ -56,10 +59,15 @@ type Parts<E extends Endpoint> = {
   body: Z.input<E["body"]>;
 };
 
-// Parts whose schema is `Z.never()` are banned; parts that accept `{}` are optional
+// Parts whose schema is `Z.never()` are banned; parts that accept `{}` or `undefined` are optional
 type Empty = Record<never, never>;
-type RequiredParts<T> = { [K in keyof T as [T[K]] extends [never] ? never : Empty extends T[K] ? never : K]: T[K] };
-type OptionalParts<T> = { [K in keyof T as [T[K]] extends [never] ? never : Empty extends T[K] ? K : never]?: T[K] };
+type IsOptional<V> = undefined extends V ? true : Empty extends V ? true : false;
+type RequiredParts<T> = {
+  [K in keyof T as [T[K]] extends [never] ? never : IsOptional<T[K]> extends true ? never : K]: T[K];
+};
+type OptionalParts<T> = {
+  [K in keyof T as [T[K]] extends [never] ? never : IsOptional<T[K]> extends true ? K : never]?: T[K];
+};
 type BannedParts<T> = { [K in keyof T as [T[K]] extends [never] ? K : never]?: never };
 type Simplify<T> = { [K in keyof T]: T[K] } & Empty;
 
@@ -75,22 +83,6 @@ export type Args<E extends Endpoint> = E extends { args: (...args: infer A) => u
 
 /** Rejects endpoints whose `args` doesn't produce that endpoint's own payload. */
 export type Checked<E extends Endpoint> = E & { args?: (...args: never[]) => Payload<E> };
-
-/** A non-2xx (or otherwise unexpected) response from Alpaca. */
-export class AlpacaError extends Error {
-  override name = "AlpacaError";
-
-  constructor(
-    message: string,
-    readonly status: number,
-    /** The endpoint's `name`. */
-    readonly endpoint: string,
-    /** The parsed response body when it was JSON. Alpaca's errors are `{ code, message }`. */
-    readonly body?: unknown,
-  ) {
-    super(message);
-  }
-}
 
 // Namespaces are plain data: nested objects of endpoint definitions. These swap each endpoint in a
 // tree for `client.bind(endpoint)`.

@@ -455,11 +455,16 @@ const generateEndpoints = (spec: Spec, file: string, api: string, skipped: Skipp
 
 // ── Main ────────────────────────────────────────────────────────────────────────────────────────
 
-const applyOverrides = (spec: Spec, { schemas = {}, operations = {} }: Overrides, file: string) => {
+const applyOverrides = (spec: Spec, { schemas = {}, parameters = {}, operations = {} }: Overrides, file: string) => {
   for (const [name, patch] of Object.entries(schemas)) {
     const schema = spec.components.schemas[name];
     if (!schema) throw new Error(`overrides: no schema ${name} in ${file}`);
     patch(schema);
+  }
+  for (const [name, patch] of Object.entries(parameters)) {
+    const parameter = spec.components.parameters?.[name];
+    if (!parameter) throw new Error(`overrides: no parameter ${name} in ${file}`);
+    patch(parameter);
   }
   const byId = new Map<string, Operation>();
   for (const item of Object.values(spec.paths)) {

@@ -139,6 +139,17 @@ export const AccountSchema = Z.object({
   trading_blocked: Z.boolean().optional(),
   /** If true, the account is not allowed to request money transfers. */
   transfers_blocked: Z.boolean().optional(),
+  /** Whether the account is flagged as a pattern day trader. */
+  pattern_day_trader: Z.boolean().optional(),
+  /** Day trades in the last 5 trading days. */
+  daytrade_count: Z.number().int().optional(),
+  /** Day trading buying power. */
+  daytrading_buying_power: Z.string().optional(),
+  effective_buying_power: Z.string().optional(),
+  position_market_value: Z.string().optional(),
+  crypto_tier: Z.number().int().optional(),
+  admin_configurations: Z.record(Z.string(), Z.unknown()).optional(),
+  user_configurations: Z.record(Z.string(), Z.unknown()).nullable().optional(),
 });
 export type Account = Z.output<typeof AccountSchema>;
 
@@ -160,6 +171,11 @@ export const AccountConfigurationsSchema = Z.object({
   suspend_trade: Z.boolean().optional(),
   /** all or none. If none, emails for order fills are not sent. */
   trade_confirm_email: Z.string().optional(),
+  /** Day trading buying power check. */
+  dtbp_check: Z.enum(["both", "entry", "exit"]).optional(),
+  /** Pattern day trader check. */
+  pdt_check: Z.enum(["both", "entry", "exit"]).optional(),
+  closing_transactions_only: Z.boolean().optional(),
 });
 export type AccountConfigurations = Z.output<typeof AccountConfigurationsSchema>;
 
@@ -1842,7 +1858,7 @@ export type Exchange = Z.output<typeof ExchangeSchema>;
 
 /** The assets API serves as the master list of assets available for trade and data consumption from Alpaca. Assets are sorted by asset class, exchange and symbol. Some assets are only available for data consumption via Polygon, and are not tradable with Alpaca. These assets will be marked with the flag tradable=false. */
 export const AssetsSchema = Z.object({
-  attributes: Z.array(AssetAttributeSchema).optional(),
+  attributes: Z.array(AssetAttributeSchema).nullable().optional(),
   /** Borrow status for US equity assets. This field is omitted for non-US-equity assets. */
   borrow_status: Z.enum(["easy_to_borrow", "hard_to_borrow"]).optional(),
   class: AssetClassSchema,
@@ -1877,6 +1893,7 @@ export const AssetsSchema = Z.object({
   symbol: Z.string(),
   /** Asset is tradable on Alpaca or not */
   tradable: Z.boolean(),
+  easy_to_borrow: Z.boolean().optional(),
 });
 export type Assets = Z.output<typeof AssetsSchema>;
 
@@ -1895,14 +1912,14 @@ export type CorporateActionCaType = Z.output<typeof CorporateActionCaTypeSchema>
 
 /** A corporate action announcement. */
 export const CorporateAnnouncementSchema = Z.object({
-  ca_sub_type: Z.string().optional(),
-  ca_type: CorporateActionCaTypeSchema.optional(),
+  ca_sub_type: Z.string(),
+  ca_type: Z.enum(["spinoff", "merger", "split", "reorg", "dividend"]),
   cash: Z.string().optional(),
-  corporate_action_id: Z.string().optional(),
+  corporate_action_id: Z.string(),
   declaration_date: Z.iso.date().optional(),
   effective_date: Z.iso.date().optional(),
   ex_date: Z.iso.date().optional(),
-  id: Z.string().optional(),
+  id: Z.string(),
   initiating_original_cusip: Z.string().optional(),
   initiating_symbol: Z.string().optional(),
   new_rate: Z.string().optional(),
@@ -2422,8 +2439,8 @@ export const OrderSchema = Z.object({
   asset_id: Z.string().optional(),
   canceled_at: Z.iso.datetime({ offset: true }).nullable().optional(),
   /** Client unique order ID */
-  client_order_id: Z.string().optional(),
-  created_at: Z.iso.datetime({ offset: true }).optional(),
+  client_order_id: Z.string(),
+  created_at: Z.iso.datetime({ offset: true }),
   expired_at: Z.iso.datetime({ offset: true }).nullable().optional(),
   expires_at: Z.iso.datetime({ offset: true }).optional(),
   /** If true, eligible for execution outside regular trading hours. */
@@ -2440,7 +2457,7 @@ export const OrderSchema = Z.object({
   /** The highest (lowest) market price seen since the trailing stop order was submitted. */
   hwm: Z.string().nullable().optional(),
   /** Order ID */
-  id: Z.string().optional(),
+  id: Z.string(),
   /** When querying non-simple order_class orders in a nested style, an array of Order entities associated with this order. Otherwise, null. Required if order class is `mleg`. */
   legs: Z.array(OrderLegSchema).nullable().optional(),
   /** Limit price */
@@ -2460,13 +2477,13 @@ export const OrderSchema = Z.object({
   replaced_by: Z.string().nullable().optional(),
   /** The order ID that this order replaces */
   replaces: Z.string().nullable().optional(),
-  side: OrderSideSchema.optional(),
-  status: OrderStatusSchema.optional(),
+  side: OrderSideSchema,
+  status: OrderStatusSchema,
   /** Stop price */
   stop_price: Z.string().nullable().optional(),
   submitted_at: Z.iso.datetime({ offset: true }).optional(),
   /** Asset symbol, required for all order classes except for `mleg` */
-  symbol: Z.string().optional(),
+  symbol: Z.string(),
   time_in_force: TimeInForceSchema,
   /** The percent value away from the high water mark for trailing stop orders. */
   trail_percent: Z.string().nullable().optional(),
@@ -2474,6 +2491,8 @@ export const OrderSchema = Z.object({
   trail_price: Z.string().nullable().optional(),
   type: OrderTypeSchema,
   updated_at: Z.iso.datetime({ offset: true }).optional(),
+  subtag: Z.string().nullable().optional(),
+  source: Z.string().nullable().optional(),
 });
 export type Order = Z.output<typeof OrderSchema>;
 
