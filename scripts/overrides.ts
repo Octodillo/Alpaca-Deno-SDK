@@ -107,5 +107,13 @@ export const overrides: Record<"trading" | "market" | "broker", Overrides> = {
       },
     },
   },
-  broker: {},
+  broker: {
+    operations: {
+      // Declares a 200 with no content, but the endpoint returns the logo image; marking it as PNG
+      // makes the generator skip it like market data's logos endpoint
+      "get-v1beta1-logos-symbol": (operation) => {
+        operation.responses["200"].content = { "image/png": {} };
+      },
+    },
+  },
 };

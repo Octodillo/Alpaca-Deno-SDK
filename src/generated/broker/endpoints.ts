@@ -324,23 +324,6 @@ export const listACATSContraBrokers = {
   okStatus: 200,
 } satisfies Endpoint;
 
-// ── Logos ──
-
-/** Alpaca's Logo API serves uniform logo images for select stock and crypto symbols. */
-export const getV1beta1LogosSymbol = {
-  name: "Get Logo",
-  api: "broker",
-  method: "GET",
-  path: "v1beta1/logos/{symbol}",
-
-  params: Z.object({ symbol: Z.string() }),
-  query: Z.object({ placeholder: Z.string().optional() }),
-  body: Z.never(),
-  response: Z.void(),
-
-  okStatus: 200,
-} satisfies Endpoint;
-
 // ── Accounts ──
 
 /** Retrieves the first 1000 accounts that match the query parameters. Sorting is based on creation time. The created_after/created_before query parameters can be used to paginate the results. To further limit the size of the response, the entities query parameter can be used to specify which properties are included in the response. */
@@ -2736,6 +2719,7 @@ export const deleteDeleteV1TradingAccountsAccountIdWatchlistsWatchlistIdSymbol =
 } satisfies Endpoint;
 
 // Not generated (out of scope: only JSON responses are supported):
+// - get-v1beta1-logos-symbol: returns image/png
 // - downloadDocFromAccount: no 2xx response (declares 301, 404)
 // - get-v1-accounts-account_id-documents-w8ben-document_id-download: no 2xx response (declares 301, 404)
 // - subscribeToAccountStatusSSE: returns text/event-stream

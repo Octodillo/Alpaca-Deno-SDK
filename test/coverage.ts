@@ -5,6 +5,8 @@ import * as trading from "../src/generated/trading/endpoints.ts";
 import { tradingEndpoints } from "../src/trading/mod.ts";
 import * as market from "../src/generated/market/endpoints.ts";
 import { marketEndpoints } from "../src/market/mod.ts";
+import * as broker from "../src/generated/broker/endpoints.ts";
+import { brokerEndpoints } from "../src/broker/mod.ts";
 
 const key = (endpoint: Endpoint) => `${endpoint.method} ${endpoint.path}`;
 
@@ -27,4 +29,8 @@ Deno.test("coverage: trading", () => {
 
 Deno.test("coverage: market", () => {
   assertEquals(missing(market, marketEndpoints), []);
+});
+
+Deno.test("coverage: broker", () => {
+  assertEquals(missing(broker, brokerEndpoints), []);
 });

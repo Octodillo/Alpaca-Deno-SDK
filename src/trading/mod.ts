@@ -1,23 +1,7 @@
 import type { Endpoint } from "../client.ts";
-import { AlpacaError } from "../errors.ts";
+import { failOnPartial } from "../errors.ts";
 import * as T from "../generated/trading/endpoints.ts";
 import type { ActivityType, Market } from "../generated/trading/schemas.ts";
-
-/**
- * A 207 response reports one status per item. Turns the failed items into an `AggregateError` of
- * `AlpacaError`s, so a partial failure can't pass unnoticed.
- */
-const failOnPartial =
-  <Item extends { status?: number }>(name: string, describe: (item: Item) => string) => (items: Item[]) => {
-    const failures = items.filter((item) => item.status !== 200);
-    if (!failures.length) return items;
-    throw new AggregateError(
-      failures.map((item) =>
-        new AlpacaError(`${name}: ${describe(item)}: ${item.status}`, item.status ?? 0, name, item)
-      ),
-      `${name}: ${failures.length} of ${items.length} failed`,
-    );
-  };
 
 export const cancelAllOrders = {
   ...T.deleteAllOrders,
