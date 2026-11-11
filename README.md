@@ -1,5 +1,7 @@
 # alpaca-sdk
 
+[![CI](https://github.com/Octodillo/Alpaca-Deno-SDK/actions/workflows/ci.yml/badge.svg)](https://github.com/Octodillo/Alpaca-Deno-SDK/actions/workflows/ci.yml)
+
 A typed Deno/TypeScript client for [Alpaca](https://alpaca.markets)'s three REST APIs: Trading, Market Data and Broker.
 Endpoints and their Zod schemas are generated from Alpaca's OpenAPI specs, so request payloads are checked at compile
 time and validated at runtime, and responses come back parsed and typed.
