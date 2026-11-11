@@ -1,6 +1,6 @@
-import { assert, assertEquals, assertRejects, assertStrictEquals } from "@std/assert";
+import { assert, assertEquals, assertInstanceOf, assertRejects, assertStrictEquals } from "@std/assert";
 import { Z } from "../src/external.ts";
-import { Alpaca, AlpacaError, Endpoint } from "../src/client.ts";
+import { Alpaca, AlpacaError, AlpacaResponseError, Endpoint } from "../src/client.ts";
 import { tradingEndpoints } from "../src/trading/mod.ts";
 import { auth, json, live, withStubbedFetch } from "./common.ts";
 
@@ -169,6 +169,52 @@ Deno.test("errors throw AlpacaError with the API's message", async () => {
     );
     assertEquals(error.message, "Delete Thing: not deletable");
     assertEquals(error.body, undefined);
+  });
+});
+
+Deno.test("any 2xx is success, whichever one the endpoint declares", async () => {
+  // getThing declares 200. A mutation answered with an undeclared 201 still happened
+  await withStubbedFetch(() => json({ ok: true }, 201), async () => {
+    const result = await new Alpaca({ auth: keys }).request(getThing, { params: { account_id: "a", thing_id: "b" } });
+    assertEquals(result, { ok: true });
+  });
+  await withStubbedFetch(() => new Response(null, { status: 202 }), async () => {
+    const result = await new Alpaca({ auth: keys }).request(deleteThing, { params: { thing_id: "1" } });
+    assertStrictEquals(result, undefined);
+  });
+});
+
+Deno.test("a 2xx body that doesn't match the schema throws AlpacaResponseError with the raw body", async () => {
+  const send = () => new Alpaca({ auth: keys }).request(createThing, { body: { qty: 5 } });
+
+  // The thing was created: the caller must be able to tell, and to read what came back
+  await withStubbedFetch(() => json({ id: 7, extra: "kept" }, 201), async () => {
+    const error = await assertRejects(send, AlpacaResponseError, "Create Thing: 201");
+    assertInstanceOf(error, AlpacaError);
+    assertEquals(error.status, 201);
+    assertEquals(error.endpoint, "Create Thing");
+    assertEquals(error.body, { id: 7, extra: "kept" });
+    assertInstanceOf(error.cause, Z.ZodError);
+  });
+  await withStubbedFetch(() => new Response("<html>ok</html>", { status: 200 }), async () => {
+    const error = await assertRejects(send, AlpacaResponseError, "Create Thing: 200");
+    assertEquals(error.body, "<html>ok</html>");
+    assertInstanceOf(error.cause, SyntaxError);
+  });
+  await withStubbedFetch(() => new Response(null, { status: 204 }), async () => {
+    const error = await assertRejects(send, AlpacaResponseError, "Create Thing: 204");
+    assertEquals(error.body, undefined);
+  });
+});
+
+Deno.test("non-2xx errors are not AlpacaResponseErrors", async () => {
+  await withStubbedFetch(() => json({ message: "moved" }, 301), async () => {
+    const error = await assertRejects(
+      () => new Alpaca({ auth: keys }).request(createThing, { body: { qty: 5 } }),
+      AlpacaError,
+      "Create Thing: 301 moved",
+    );
+    assert(!(error instanceof AlpacaResponseError));
   });
 });
 

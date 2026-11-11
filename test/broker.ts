@@ -1,8 +1,7 @@
 // Broker endpoints aren't live-tested (no broker credentials), so this checks the request a broker
 // call builds, against a stubbed fetch.
 import { assertEquals, assertRejects } from "@std/assert";
-import { Z } from "../src/external.ts";
-import { Alpaca } from "../src/client.ts";
+import { Alpaca, AlpacaResponseError } from "../src/client.ts";
 import { json, withStubbedFetch } from "./common.ts";
 
 const order = {
@@ -38,7 +37,7 @@ Deno.test("broker: live host, args", async () => {
   await withStubbedFetch(() => json({}), async (requests) => {
     const client = new Alpaca({ auth: { key: "K", secret: "S" }, broker: true, paper: false });
     // Only the request matters here; the stubbed `{}` isn't a valid account
-    await assertRejects(() => client.broker.accounts.get("acct/1"), Z.ZodError);
+    await assertRejects(() => client.broker.accounts.get("acct/1"), AlpacaResponseError);
     assertEquals(requests[0].url.href, "https://broker-api.alpaca.markets/v1/accounts/acct%2F1");
   });
 });

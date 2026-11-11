@@ -1,4 +1,4 @@
-/** A non-2xx (or otherwise unexpected) response from Alpaca. */
+/** A non-2xx response from Alpaca. */
 export class AlpacaError extends Error {
   override name = "AlpacaError";
 
@@ -11,6 +11,25 @@ export class AlpacaError extends Error {
     readonly body?: unknown,
   ) {
     super(message);
+  }
+}
+
+/**
+ * A 2xx response whose body isn't what the endpoint declares. The request itself succeeded: an
+ * order was placed, a transfer created. Don't retry it as if it had failed; `body` holds what Alpaca
+ * sent (parsed JSON, or the raw text when it wasn't JSON) and `cause` the `ZodError` or `SyntaxError`.
+ */
+export class AlpacaResponseError extends AlpacaError {
+  override name = "AlpacaResponseError";
+
+  constructor(status: number, endpoint: string, body: unknown, cause: unknown) {
+    super(
+      `${endpoint}: ${status} response doesn't match the endpoint's schema (the request itself succeeded)`,
+      status,
+      endpoint,
+      body,
+    );
+    this.cause = cause;
   }
 }
 

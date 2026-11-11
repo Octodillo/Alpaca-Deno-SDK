@@ -56,16 +56,19 @@ const broker = new Alpaca({ auth: { key, secret }, broker: true });
 await broker.broker.accounts.get(accountId);
 ```
 
-Errors are `AlpacaError`s with `status`, `endpoint` and the parsed `body`, and the message is the one Alpaca sent.
-Endpoints that answer 207 per item (cancel all orders, close all positions) throw an `AggregateError` of `AlpacaError`s
-when any item fails.
+Errors are `AlpacaError`s with `status`, `endpoint` and the parsed `body`, and the message is the one Alpaca sent. Any
+2xx is a success. If a 2xx body doesn't match the endpoint's schema, the call throws an `AlpacaResponseError` (an
+`AlpacaError` with a 2xx `status`, the raw `body`, and the `ZodError` as `cause`): the request itself went through, so
+don't retry it as a failure. Invalid request values throw a plain `ZodError` before anything is sent. Endpoints that
+answer 207 per item (cancel all orders, close all positions) throw an `AggregateError` of `AlpacaError`s when any item
+fails.
 
 ## Design
 
 - **Endpoints are plain data.** Each endpoint is an object holding its method, a `{name}` path template, Zod schemas for
-  `params`, `query`, optional `headers`, `body` and `response`, and its success status(es). It holds no auth and no
-  client. Endpoints are declared with `satisfies Endpoint`, never annotated `: Endpoint`, since an annotation widens the
-  type and loses the schemas.
+  `params`, `query`, optional `headers`, `body` and `response`, and its documented success status(es). It holds no auth
+  and no client. Endpoints are declared with `satisfies Endpoint`, never annotated `: Endpoint`, since an annotation
+  widens the type and loses the schemas.
 - **One class, `Alpaca`.** `new Alpaca({ auth, paper, broker })` is the only way to build a client. It has
   `request(endpoint, ...args)`, `bind(endpoint)` and one namespace per API (`trading`, `market`, `broker`), each a
   nested object of bound endpoints. `request` and `bind` are arrow properties, so destructuring works. Because the SDK

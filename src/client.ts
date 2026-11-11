@@ -1,10 +1,10 @@
 import { Z } from "./external.ts";
-import { AlpacaError } from "./errors.ts";
+import { AlpacaError, AlpacaResponseError } from "./errors.ts";
 import { tradingEndpoints } from "./trading/mod.ts";
 import { marketEndpoints } from "./market/mod.ts";
 import { brokerEndpoints } from "./broker/mod.ts";
 
-export { AlpacaError };
+export { AlpacaError, AlpacaResponseError };
 
 export type APIMethod = "GET" | "OPTIONS" | "PUT" | "DELETE" | "POST" | "PATCH";
 export type PathParams = Record<string, string | number>;
@@ -44,6 +44,7 @@ export interface Endpoint {
   body: Z.ZodType;
   response: Z.ZodType;
 
+  /** The success status(es) the API documents. Informational: the client accepts any 2xx. */
   okStatus: number | number[];
   statusMessages?: Record<number, string>;
 
@@ -185,17 +186,27 @@ export class Alpaca {
     }
 
     const response = await fetch(url, requestInit);
-    const ok = Array.isArray(endpoint.okStatus)
-      ? endpoint.okStatus.includes(response.status)
-      : response.status === endpoint.okStatus;
-
-    if (ok && (response.status === 204 || isVoid(endpoint.response))) {
-      await response.body?.cancel();
-      return endpoint.response.parse(undefined) as Response<E>;
-    }
-    if (ok) return endpoint.response.parse(await response.json()) as Response<E>;
-
     const text = await response.text();
+
+    // Any 2xx counts, not only the status the spec lists: by then the request has taken effect, and
+    // reporting it as a failure invites a retry that duplicates an order or a transfer
+    if (response.ok) {
+      if (isVoid(endpoint.response)) return endpoint.response.parse(undefined) as Response<E>;
+      let data: unknown;
+      try {
+        data = text === "" ? undefined : JSON.parse(text);
+      } catch (cause) {
+        throw new AlpacaResponseError(response.status, endpoint.name, text, cause);
+      }
+      try {
+        return endpoint.response.parse(data) as Response<E>;
+      } catch (cause) {
+        // Anything else was thrown by the schema's own transform (see `failOnPartial`)
+        if (cause instanceof Z.ZodError) throw new AlpacaResponseError(response.status, endpoint.name, data, cause);
+        throw cause;
+      }
+    }
+
     let body: unknown;
     try {
       body = JSON.parse(text);
