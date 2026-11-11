@@ -85,6 +85,15 @@ liveTest("options.all, get", async () => {
   assertEquals(contract.underlying_symbol, "AAPL");
 });
 
+liveTest("options.all: a page of far-dated contracts, some never traded", async () => {
+  // Untraded contracts have null close price and open interest, which the spec doesn't allow for
+  const from = new Date(Date.now() + 14 * 86_400_000).toISOString().slice(0, 10);
+  const { option_contracts } = await t.options.all({
+    query: { underlying_symbols: "AAPL", type: "call", expiration_date_gte: from, limit: 100 },
+  });
+  assertEquals(option_contracts?.length, 100);
+});
+
 liveTest("corporateActions.announcements, announcement", async () => {
   const announcements = await t.corporateActions.announcements({
     query: { ca_types: ["Dividend"], since: "2026-07-01", until: "2026-09-28", symbol: "AAPL" },
@@ -173,6 +182,48 @@ mutatingTest("order: limit buy far below market, get, replace, cancel", async ()
   assertEquals(original.status, "replaced");
   const replacement = await t.orders.get(original.replaced_by!);
   assert(["canceled", "pending_cancel"].includes(replacement.status), replacement.status);
+});
+
+mutatingTest("order: multi-leg call spread far below market, get, search, cancel", async () => {
+  // Two calls of one expiry at least two weeks out: buy the lower strike, sell the higher. The
+  // spread is worth more than its 0.01 limit, so the order rests until it's canceled
+  const from = new Date(Date.now() + 14 * 86_400_000).toISOString().slice(0, 10);
+  const { option_contracts } = await t.options.all({
+    query: { underlying_symbols: "AAPL", type: "call", expiration_date_gte: from, limit: 100 },
+  });
+  const sameExpiry = option_contracts!.filter((c) => c.expiration_date === option_contracts![0].expiration_date)
+    .sort((a, b) => Number(a.strike_price) - Number(b.strike_price));
+  const [low, high] = sameExpiry.slice(Math.floor(sameExpiry.length / 2));
+  assert(low && high, "need two AAPL calls of the same expiry");
+
+  const client_order_id = `alpaca-sdk-test-${crypto.randomUUID()}`;
+  try {
+    const order = await t.orders.create({
+      body: {
+        order_class: "mleg",
+        qty: "1",
+        type: "limit",
+        limit_price: "0.01",
+        time_in_force: "day",
+        client_order_id,
+        legs: [
+          { symbol: low.symbol, ratio_qty: "1", side: "buy", position_intent: "buy_to_open" },
+          { symbol: high.symbol, ratio_qty: "1", side: "sell", position_intent: "sell_to_open" },
+        ],
+      },
+    });
+    // What the parent of a multi-leg order looks like, and what OrderSchema used to reject
+    assertEquals(order.order_class, "mleg");
+    assertEquals([order.symbol, order.side, order.asset_class], ["", "", ""]);
+    assertEquals(order.legs?.map((leg) => leg.symbol), [low.symbol, high.symbol]);
+    assertEquals((await t.orders.get(order.id, true)).legs?.length, 2);
+    // One multi-leg order used to fail the whole list
+    const open = await t.orders.search({ query: { status: "open", nested: true, limit: 500 } });
+    assert(open.some((o) => o.id === order.id));
+  } finally {
+    const order = await t.orders.getByClientID(client_order_id).catch(() => undefined);
+    if (order && !["canceled", "filled", "expired", "rejected"].includes(order.status)) await t.orders.delete(order.id);
+  }
 });
 
 // Offline: these must never run live, since they'd cancel or close everything on the account

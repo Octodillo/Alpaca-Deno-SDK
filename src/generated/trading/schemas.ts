@@ -2300,9 +2300,9 @@ export type OptionContractType = Z.output<typeof OptionContractTypeSchema>;
 
 export const OptionContractSchema = Z.object({
   /** The close price of the option contract. */
-  close_price: Z.string().optional(),
+  close_price: Z.string().nullable().optional(),
   /** The date of the close price data. */
-  close_price_date: Z.iso.date().optional(),
+  close_price_date: Z.iso.date().nullable().optional(),
   /** Represents the deliverables tied to the option contract. While standard contracts entail a single deliverable, non-standard ones can encompass multiple deliverables, each potentially customized with distinct parameters. This array is included in the list contracts response only if the query parameter show_deliverables=true is provided. */
   deliverables: Z.array(OptionDeliverableSchema).optional(),
   /** The expiration date of the option contract. */
@@ -2314,9 +2314,9 @@ export const OptionContractSchema = Z.object({
   /** The name of the option contract. */
   name: Z.string(),
   /** The open interest of the option contract. */
-  open_interest: Z.string().optional(),
+  open_interest: Z.string().nullable().optional(),
   /** The date of the open interest data. */
-  open_interest_date: Z.iso.date().optional(),
+  open_interest_date: Z.iso.date().nullable().optional(),
   /** The ppind (Penny Program Indicator) field indicates whether an option contract is eligible for penny price increments, with `true` meaning it is part of the Penny Program and `false` meaning it is not. */
   ppind: Z.boolean(),
   /** The root symbol of the option contract. */
@@ -2375,7 +2375,7 @@ export type OrderStatus = Z.output<typeof OrderStatusSchema>;
 
 /** This is copy of Order response schemas as a workaround of displaying issue of nested Order recursively for legs */
 export const OrderLegSchema = Z.object({
-  asset_class: AssetClassSchema.optional(),
+  asset_class: Z.union([AssetClassSchema, Z.literal("")]).optional(),
   /** Asset ID (For options this represents the option contract ID) */
   asset_id: Z.string().optional(),
   canceled_at: Z.iso.datetime({ offset: true }).nullable().optional(),
@@ -2415,7 +2415,7 @@ export const OrderLegSchema = Z.object({
   replaced_by: Z.string().nullable().optional(),
   /** The order ID that this order replaces */
   replaces: Z.string().nullable().optional(),
-  side: OrderSideSchema,
+  side: Z.union([OrderSideSchema, Z.literal("")]),
   status: OrderStatusSchema.optional(),
   /** Stop price */
   stop_price: Z.string().nullable().optional(),
@@ -2427,14 +2427,14 @@ export const OrderLegSchema = Z.object({
   trail_percent: Z.string().nullable().optional(),
   /** The dollar value away from the high water mark for trailing stop orders. */
   trail_price: Z.string().nullable().optional(),
-  type: OrderTypeSchema,
+  type: Z.union([OrderTypeSchema, Z.literal("")]),
   updated_at: Z.iso.datetime({ offset: true }).optional(),
 });
 export type OrderLeg = Z.output<typeof OrderLegSchema>;
 
 /** The Orders API allows a user to monitor, place and cancel their orders with Alpaca. */
 export const OrderSchema = Z.object({
-  asset_class: AssetClassSchema.optional(),
+  asset_class: Z.union([AssetClassSchema, Z.literal("")]).optional(),
   /** Asset ID (For options this represents the option contract ID) */
   asset_id: Z.string().optional(),
   canceled_at: Z.iso.datetime({ offset: true }).nullable().optional(),
@@ -2477,7 +2477,7 @@ export const OrderSchema = Z.object({
   replaced_by: Z.string().nullable().optional(),
   /** The order ID that this order replaces */
   replaces: Z.string().nullable().optional(),
-  side: OrderSideSchema,
+  side: Z.union([OrderSideSchema, Z.literal("")]),
   status: OrderStatusSchema,
   /** Stop price */
   stop_price: Z.string().nullable().optional(),
@@ -2489,7 +2489,7 @@ export const OrderSchema = Z.object({
   trail_percent: Z.string().nullable().optional(),
   /** The dollar value away from the high water mark for trailing stop orders. */
   trail_price: Z.string().nullable().optional(),
-  type: OrderTypeSchema,
+  type: Z.union([OrderTypeSchema, Z.literal("")]),
   updated_at: Z.iso.datetime({ offset: true }).optional(),
   subtag: Z.string().nullable().optional(),
   source: Z.string().nullable().optional(),

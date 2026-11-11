@@ -13,6 +13,27 @@ const dateOrDateTime: Schema = {
   anyOf: [{ type: "string", format: "date" }, { type: "string", format: "date-time" }],
 };
 
+/**
+ * A multi-leg (mleg) order comes back as a parent with `side: ""` and `asset_class: ""` (and
+ * `symbol: ""`), over legs with `type: ""`: see the spec's own MultilegOptionsOrderResponse example.
+ * The enums reject "", so one mleg order made every response that included it fail to parse.
+ * Patched on the response schemas only, leaving the shared enums strict for requests.
+ */
+const blankableOrderEnums = (schema: Schema) => {
+  // `order_type` is the deprecated twin of `type`: an enum in the broker spec, a plain string in trading's
+  for (const key of ["side", "asset_class", "type", "order_type"]) {
+    const property = schema.properties![key];
+    if (property.$ref) schema.properties![key] = { anyOf: [property, { const: "" }] };
+  }
+};
+
+/** Contracts that haven't traded yet have no close price or open interest: the API sends null. */
+const nullableContractStats = (schema: Schema) => {
+  for (const key of ["close_price", "close_price_date", "open_interest", "open_interest_date"]) {
+    schema.properties![key] = { ...schema.properties![key], type: ["string", "null"] };
+  }
+};
+
 export const overrides: Record<"trading" | "market" | "broker", Overrides> = {
   trading: {
     parameters: {
@@ -72,7 +93,10 @@ export const overrides: Record<"trading" | "market" | "broker", Overrides> = {
           subtag: { type: ["string", "null"] },
           source: { type: ["string", "null"] },
         };
+        blankableOrderEnums(schema);
       },
+      OrderLeg: blankableOrderEnums,
+      OptionContract: nullableContractStats,
       // No `required` at all in the spec; every announcement has these. And `ca_type` reuses the
       // request's capitalized enum ("Dividend"), but responses are lowercase ("dividend")
       CorporateAnnouncement: (schema) => {
@@ -106,6 +130,14 @@ export const overrides: Record<"trading" | "market" | "broker", Overrides> = {
     },
   },
   broker: {
+    schemas: {
+      Order: blankableOrderEnums,
+      OrderLeg: blankableOrderEnums,
+      OptionContract: nullableContractStats,
+      // Bracket legs wait as "held", as the trading spec's enum and this spec's own
+      // BracketOrderResponse example have it
+      OrderStatus: (schema) => void schema.enum!.push("held"),
+    },
     operations: {
       // Declares a 200 with no content, but the endpoint returns the logo image; marking it as PNG
       // makes the generator skip it like market data's logos endpoint

@@ -116,7 +116,10 @@ explaining each patch. Current overrides:
   `AccountConfigurations`, `subtag`/`source` on `Order`, `easy_to_borrow` on `Assets`
 - Required fields the spec doesn't mark: `Order.id` and friends, and `CorporateAnnouncement` (whose spec has no
   `required` at all)
-- Nullability: `Assets.attributes`, and the auction sides of `stock_daily_auctions`
+- Nullability: `Assets.attributes`, the auction sides of `stock_daily_auctions`, and an untraded `OptionContract`'s
+  close price and open interest
+- Multi-leg orders: the parent's `side` and `asset_class` (and a leg's `type`) come back as `""`, which the enums
+  reject, so order responses accept it. Broker's `OrderStatus` gains `held`
 - `CorporateAnnouncement.ca_type`: responses are lowercase, the spec reuses the capitalized request enum
 - Calendar `start`/`end` accept plain dates as well as date-times. (Date filters whose description says "YYYY-MM-DD",
   such as market data `start`/`end` and the activities `date`/`after`/`until`, get this from the generator itself.)
@@ -143,7 +146,7 @@ Live tests use paper trading keys from `.env` (`key=...`, `secret=...`) and skip
   status.
 - Tests never touch state they didn't create: no cancel-all, no close-all, no account configuration changes. Cancel-all
   and close-all are tested offline against a stubbed `fetch`.
-- `ALPACA_MUTATING_TESTS=1` adds tests that create a watchlist and a far-below-market BTC/USD limit order, exercise
-  them, and clean up in `finally`.
+- `ALPACA_MUTATING_TESTS=1` adds tests that create a watchlist, a far-below-market BTC/USD limit order and a
+  far-below-market multi-leg AAPL call spread, exercise them, and clean up in `finally`.
 - **Broker endpoints are not live-tested**, because no broker credentials were available. They're type-checked, and
   `test/broker.ts` checks the request they build (Basic auth, hosts, path substitution) against a stubbed `fetch`.
