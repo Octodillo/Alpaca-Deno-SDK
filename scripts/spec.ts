@@ -25,6 +25,7 @@ export interface Parameter {
   name: string;
   in: "path" | "query" | "header" | "cookie";
   required?: boolean;
+  description?: string;
   schema?: Schema;
   style?: string;
   explode?: boolean;

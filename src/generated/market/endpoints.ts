@@ -182,7 +182,7 @@ export const optionSnapshots = {
   query: Z.object({
     symbols: Z.string(),
     feed: S.OptionFeedSchema.optional(),
-    updated_since: Z.iso.datetime({ offset: true }).optional(),
+    updated_since: Z.union([Z.iso.date(), Z.iso.datetime({ offset: true })]).optional(),
     limit: Z.number().int().optional(),
     page_token: Z.string().optional(),
   }),
@@ -203,7 +203,7 @@ export const optionChain = {
   query: Z.object({
     feed: S.OptionFeedSchema.optional(),
     limit: Z.number().int().optional(),
-    updated_since: Z.iso.datetime({ offset: true }).optional(),
+    updated_since: Z.union([Z.iso.date(), Z.iso.datetime({ offset: true })]).optional(),
     page_token: Z.string().optional(),
     type: Z.enum(["call", "put"]).optional(),
     strike_price_gte: Z.number().optional(),

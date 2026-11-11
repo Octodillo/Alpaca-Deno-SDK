@@ -17,7 +17,8 @@ export const overrides: Record<"trading" | "market" | "broker", Overrides> = {
   trading: {
     parameters: {
       // The spec says date-time, but the API takes plain dates too (`start=2026-01-01`), which is what
-      // most callers pass
+      // most callers pass. Unlike the other date filters, the description doesn't say so, so the
+      // generator can't tell
       legacy_start: (parameter) => void (parameter.schema = dateOrDateTime),
       legacy_end: (parameter) => void (parameter.schema = dateOrDateTime),
     },
@@ -93,11 +94,6 @@ export const overrides: Record<"trading" | "market" | "broker", Overrides> = {
     },
   },
   market: {
-    parameters: {
-      // Same as trading's: the spec says date-time, the API also takes plain dates
-      start: (parameter) => void (parameter.schema = dateOrDateTime),
-      end: (parameter) => void (parameter.schema = dateOrDateTime),
-    },
     schemas: {
       // When a page ends between a day's opening and closing auctions, the other side is null
       stock_daily_auctions: (schema) => {

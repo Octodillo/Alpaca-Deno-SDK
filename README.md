@@ -114,7 +114,8 @@ explaining each patch. Current overrides:
   `required` at all)
 - Nullability: `Assets.attributes`, and the auction sides of `stock_daily_auctions`
 - `CorporateAnnouncement.ca_type`: responses are lowercase, the spec reuses the capitalized request enum
-- Calendar and market data `start`/`end` accept plain dates as well as date-times
+- Calendar `start`/`end` accept plain dates as well as date-times. (Date filters whose description says "YYYY-MM-DD",
+  such as market data `start`/`end` and the activities `date`/`after`/`until`, get this from the generator itself.)
 - Broker logos: declared without content, actually a PNG
 
 ## Tests

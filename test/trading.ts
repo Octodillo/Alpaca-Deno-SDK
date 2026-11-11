@@ -37,6 +37,13 @@ liveTest("account.activities", async () => {
   assert(activities.length <= 1);
 });
 
+liveTest("account.activities: plain dates as filters", async () => {
+  assert(Array.isArray(await t.account.activities({ query: { date: "2026-10-09" } })));
+  const range = { after: "2026-10-01", until: "2026-10-09T20:00:00Z", page_size: 1 };
+  assert(Array.isArray(await t.account.activities({ query: range })));
+  assert(Array.isArray(await t.account.activitiesByType("FILL", range)));
+});
+
 liveTest("account.activitiesByType", async () => {
   const fills = await t.account.activitiesByType("FILL");
   assert(Array.isArray(fills));

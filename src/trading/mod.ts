@@ -1,4 +1,5 @@
 import type { Endpoint } from "../client.ts";
+import type { Z } from "../external.ts";
 import { failOnPartial } from "../errors.ts";
 import * as T from "../generated/trading/endpoints.ts";
 import type { ActivityType, Market } from "../generated/trading/schemas.ts";
@@ -24,7 +25,10 @@ export const tradingEndpoints = {
     activities: T.getAccountActivities,
     activitiesByType: {
       ...T.getAccountActivitiesByActivityType,
-      args: (activity_type: ActivityType) => ({ params: { activity_type } }),
+      args: (activity_type: ActivityType, query?: Z.input<typeof T.getAccountActivitiesByActivityType.query>) => ({
+        params: { activity_type },
+        query,
+      }),
     } satisfies Endpoint,
   },
 

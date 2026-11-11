@@ -364,6 +364,17 @@ const deref = <T extends { $ref?: string }>(
   return target as T;
 };
 
+const dateOrDateTime: Schema = {
+  anyOf: [{ type: "string", format: "date" }, { type: "string", format: "date-time" }],
+};
+
+/**
+ * Many date filters are declared `date-time` while their description says "RFC-3339 or YYYY-MM-DD",
+ * and the API does take both. The description wins: plain dates are what most callers pass.
+ */
+const documentedAsDate = ({ schema, description }: Parameter) =>
+  schema?.type === "string" && schema.format === "date-time" && /\bYYYY-MM-DD\b/.test(description ?? "");
+
 const generateEndpoints = (spec: Spec, file: string, api: string, skipped: Skipped[]) => {
   const identifiers = schemaIdentifiers(spec);
   const writer = new ZodWriter(spec, (name) => `S.${identifiers.get(name)}Schema`);
@@ -410,7 +421,9 @@ const generateEndpoints = (spec: Spec, file: string, api: string, skipped: Skipp
             throw new Error(`${operationId}: unsupported ${location} parameter ${parameter.name}`);
           }
           const optional = !allOptional && (parameter.required || location === "path") ? "" : ".optional()";
-          return `${propertyKey(parameter.name)}: ${writer.zod(schema)}${optional}`;
+          return `${propertyKey(parameter.name)}: ${
+            writer.zod(documentedAsDate(parameter) ? dateOrDateTime : schema)
+          }${optional}`;
         });
         return `Z.object({ ${fields.join(", ")} })`;
       };
