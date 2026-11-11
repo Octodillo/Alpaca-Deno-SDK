@@ -77,6 +77,21 @@ Deno.test("missing path param throws before sending", async () => {
   });
 });
 
+Deno.test("dot path params throw before sending: the URL parser would drop the segment", async () => {
+  // `v2/things/.` normalizes to `v2/things/`, the collection, so DELETE would hit delete-all
+  await withStubbedFetch(() => new Response(null, { status: 204 }), async (requests) => {
+    const client = new Alpaca({ auth: keys });
+    for (const thing_id of [".", ".."]) {
+      await assertRejects(() => client.request(deleteThing, { params: { thing_id } }), TypeError, "thing_id");
+    }
+    assertEquals(requests.length, 0);
+    // Dots inside a longer value are ordinary characters (BRK.B)
+    await client.request(deleteThing, { params: { thing_id: "BRK.B" } });
+    await client.request(deleteThing, { params: { thing_id: "..." } });
+    assertEquals(requests.map((r) => r.url.pathname), ["/v2/things/BRK.B", "/v2/things/..."]);
+  });
+});
+
 Deno.test("auth: broker API uses Basic, trading uses key headers", async () => {
   await withStubbedFetch(() => new Response(null, { status: 204 }), async (requests) => {
     await new Alpaca({ auth: keys }).request(deleteThing, { params: { thing_id: "1" } });

@@ -150,6 +150,11 @@ export class Alpaca {
       if (value === undefined || value === null || value === "") {
         throw new TypeError(`${endpoint.name}: Missing path parameter ${key}`);
       }
+      // URL parsing resolves dot segments, percent-encoded or not, which would turn a request for
+      // one item into a request to its collection (`DELETE v2/orders/.` is cancel-all)
+      if (value === "." || value === "..") {
+        throw new TypeError(`${endpoint.name}: Invalid path parameter ${key}: ${JSON.stringify(value)}`);
+      }
       return encodeURIComponent(value);
     });
 
