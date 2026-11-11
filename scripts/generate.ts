@@ -441,7 +441,9 @@ const generateEndpoints = (spec: Spec, file: string, api: string, skipped: Skipp
         if (!media) {
           throw new Error(`${operationId}: unsupported request body ${Object.keys(requestBody.content ?? {})}`);
         }
-        body = writer.zod(media.schema ?? {}) + (requestBody.required ? "" : ".optional()");
+        // OpenAPI's default is optional, but the specs almost never set `required` and nearly every
+        // body is needed: only an explicit `required: false` (see overrides.ts) makes one optional
+        body = writer.zod(media.schema ?? {}) + (requestBody.required === false ? ".optional()" : "");
       }
 
       const media = responses[0].content?.["application/json"];

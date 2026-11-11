@@ -1803,7 +1803,7 @@ export type ActivityType = Z.output<typeof ActivityTypeSchema>;
 /** Request format used for appending an asset to an existing watchlist. */
 export const AddAssetToWatchlistRequestSchema = Z.object({
   /** the symbol name to add to the watchlist */
-  symbol: Z.string().optional(),
+  symbol: Z.string(),
 });
 export type AddAssetToWatchlistRequest = Z.output<typeof AddAssetToWatchlistRequestSchema>;
 

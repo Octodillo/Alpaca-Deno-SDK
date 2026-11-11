@@ -180,6 +180,34 @@ Deno.test("request validates before sending", async () => {
   });
 });
 
+Deno.test("a missing required part throws before sending", async () => {
+  const searchThings = {
+    name: "Search Things",
+    api: "trading",
+    method: "GET",
+    path: "v2/things",
+
+    params: Z.never(),
+    query: Z.object({ timeframe: Z.string(), limit: Z.number().optional() }),
+    body: Z.never(),
+    response: Z.object({ ok: Z.boolean() }),
+
+    okStatus: 200,
+
+    args: (query: { timeframe: string; limit?: number }) => ({ query }),
+  } satisfies Endpoint;
+
+  await withStubbedFetch(() => json({ ok: true, id: "x" }, 201), async (requests) => {
+    const client = new Alpaca({ auth: keys });
+    // Each call bypasses the types on purpose, as untyped callers and casts do
+    await assertRejects(() => client.request(searchThings, undefined as never), Z.ZodError, "timeframe");
+    await assertRejects(() => client.request(createThing, {} as never), Z.ZodError);
+    await assertRejects(() => client.request(createThing, { body: undefined } as never), Z.ZodError);
+    await assertRejects(() => client.request(deleteThing, {} as never), Z.ZodError, "thing_id");
+    assertEquals(requests.length, 0);
+  });
+});
+
 Deno.test("args may leave optional parts undefined", async () => {
   const getQuote = {
     name: "Get Quote",

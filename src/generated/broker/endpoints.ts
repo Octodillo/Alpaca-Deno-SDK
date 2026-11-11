@@ -112,7 +112,7 @@ export const createFundingWalletRecipientBank = {
     state_or_province: Z.string().optional(),
     /** First line of address. */
     street_address: Z.string(),
-  }).optional(),
+  }),
   response: S.FundingWalletRecipientBankSchema,
 
   okStatus: 200,
@@ -853,7 +853,7 @@ export const postV1AccountsAccountIdCip = {
 
   params: Z.object({ account_id: Z.string() }),
   query: Z.never(),
-  body: S.CIPInfoSchema.optional(),
+  body: S.CIPInfoSchema,
   response: Z.void(),
 
   okStatus: 200,
@@ -874,7 +874,7 @@ export const patchV1AccountsAccountIdOnfidoSdk = {
     reason: Z.string().optional(),
     /** The SDK token associated with the SDK flow you are updating the outcome for */
     token: Z.string(),
-  }).optional(),
+  }),
   response: Z.void(),
 
   okStatus: 200,
@@ -1284,7 +1284,7 @@ export const patchPatchV1TradingAccountsAccountIdAccountConfigurations = {
 
   params: Z.object({ account_id: Z.string() }),
   query: Z.never(),
-  body: S.AccountConfigurationsSchema.optional(),
+  body: S.AccountConfigurationsSchema,
   response: S.AccountConfigurationsSchema,
 
   okStatus: 200,
@@ -1423,7 +1423,7 @@ export const getV1TradingAccountsAccountIdOrdersEstimation = {
     symbol: Z.string().optional(),
     time_in_force: S.TimeInForceSchema.optional(),
     type: S.OrderTypeSchema.optional(),
-  }).optional(),
+  }),
   response: S.OrderSchema,
 
   okStatus: 200,
@@ -2202,7 +2202,7 @@ export const postV1JournalsReverseBatch = {
 
   params: Z.never(),
   query: Z.never(),
-  body: S.ReverseBatchJournalRequestSchema.optional(),
+  body: S.ReverseBatchJournalRequestSchema,
   response: Z.array(S.JnlcSchema),
 
   okStatus: 200,
@@ -2302,7 +2302,7 @@ export const postV1RebalancingPortfolios = {
     rebalance_conditions: Z.array(S.RebalancingConditionsSchema).optional(),
     /** Weight configuration to portfolio. Sum of "percent" values in the weights array must be 100.00 */
     weights: Z.array(S.PortfolioWeightRequestSchema).optional(),
-  }).optional(),
+  }),
   response: S.PortfolioSchema,
 
   okStatus: 200,
@@ -2358,7 +2358,7 @@ export const patchV1RebalancingPortfoliosPortfolioId = {
     rebalancing_conditions: Z.array(S.RebalancingConditionsSchema).optional(),
     /** Used to update portfolio weights. */
     weights: Z.array(S.PortfolioWeightRequestSchema).optional(),
-  }).optional(),
+  }),
   response: S.PortfolioSchema,
 
   okStatus: 200,
@@ -2479,7 +2479,7 @@ export const postV1RebalancingSubscriptions = {
     account_id: Z.string().optional(),
     /** Portfolio ID. Portfolio must be active */
     portfolio_id: Z.string().optional(),
-  }).optional(),
+  }),
   response: S.PortfolioSubscriptionSchema,
 
   okStatus: 200,
@@ -2634,7 +2634,7 @@ export const createWatchlistForAccount = {
 
   params: Z.object({ account_id: Z.string() }),
   query: Z.never(),
-  body: S.CreateWatchlistRequestSchema.optional(),
+  body: S.CreateWatchlistRequestSchema,
   response: S.WatchlistSchema,
 
   okStatus: 200,
@@ -2664,7 +2664,7 @@ export const replaceWatchlistForAccountById = {
 
   params: Z.object({ account_id: Z.string(), watchlist_id: Z.string() }),
   query: Z.never(),
-  body: S.CreateWatchlistRequestSchema.optional(),
+  body: S.CreateWatchlistRequestSchema,
   response: S.WatchlistSchema,
 
   okStatus: 200,
@@ -2681,8 +2681,8 @@ export const postV1TradingAccountsAccountIdWatchlistsWatchlistId = {
   query: Z.never(),
   body: Z.object({
     /** The symbol name to add to the watchlist */
-    symbol: Z.string().optional(),
-  }).optional(),
+    symbol: Z.string(),
+  }),
   response: S.WatchlistSchema,
 
   okStatus: 200,

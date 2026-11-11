@@ -73,9 +73,10 @@ when any item fails.
 - **`args`** optionally maps friendlier positional arguments onto the payload, as in `calendar(start, end)`. They're
   only added where the arguments are obvious; everything else takes the payload. The types reject an `args` that doesn't
   produce its endpoint's own payload, including inside a namespace.
-- **Validation:** request values go through their schemas, and the parsed values are what get sent. Null and undefined
-  query values are dropped and arrays are comma-joined. Response objects are non-strict, so new API fields don't break
-  parsing (unknown keys are dropped).
+- **Validation:** request values go through their schemas, and the parsed values are what get sent. A required part
+  that's missing at runtime fails there too, before anything is sent. Null and undefined query values are dropped and
+  arrays are comma-joined. Response objects are non-strict, so new API fields don't break parsing (unknown keys are
+  dropped).
 - **No `any`.** `test/types.ts` holds `@ts-expect-error` cases that must stay type errors: wrong `args` types, invalid
   enum values, a query on a no-query endpoint, a missing path param, an `args` returning the wrong payload, and the
   `: Endpoint` annotation that loses the response type.
@@ -116,6 +117,8 @@ explaining each patch. Current overrides:
 - `CorporateAnnouncement.ca_type`: responses are lowercase, the spec reuses the capitalized request enum
 - Calendar `start`/`end` accept plain dates as well as date-times. (Date filters whose description says "YYYY-MM-DD",
   such as market data `start`/`end` and the activities `date`/`after`/`until`, get this from the generator itself.)
+- Request bodies: the generator treats every declared body as required, since the specs rarely say. Broker's option
+  `exercise`/`doNotExercise` are marked optional, and adding to a watchlist requires its `symbol`
 - Broker logos: declared without content, actually a PNG
 - Broker `GET v1/corporate_actions/announcements/{id}`: declared without content, returns an `Announcement`
 

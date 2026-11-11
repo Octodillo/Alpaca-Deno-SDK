@@ -39,3 +39,15 @@ Deno.test("generated: no GET discards its response", async () => {
     assertEquals(await client.broker.fundingWallets.recipientBank.get({ params }), bank);
   });
 });
+
+Deno.test("generated: a request body is required unless an override says it's optional", () => {
+  // The spec rarely sets `requestBody.required`, and an optional body lets `{ params }` alone
+  // type-check and send an empty POST
+  const optionalBodies = all.flatMap((endpoints) =>
+    Object.entries(endpoints).filter(([, { body }]) => body.safeParse(undefined).success)
+  ).map(([name, { api }]) => `${api}.${name}`);
+  assertEquals(optionalBodies, ["broker.optionDoNotExercise", "broker.optionExercise"]);
+
+  assert(!trading.addAssetToWatchlist.body.safeParse({}).success, "adding to a watchlist takes a symbol");
+  assert(trading.patchAccountConfig.body.safeParse({ no_shorting: true }).success);
+});

@@ -82,6 +82,8 @@ export const overrides: Record<"trading" | "market" | "broker", Overrides> = {
           ca_type: { type: "string", enum: ["spinoff", "merger", "split", "reorg", "dividend"] },
         };
       },
+      // No `required` in the spec, but adding nothing to a watchlist isn't a request
+      AddAssetToWatchlistRequest: (schema) => void (schema.required = ["symbol"]),
       // Live assets still carry `easy_to_borrow`; the spec only has the newer `borrow_status`
       // `attributes` comes back null for assets without any (seen in watchlist responses)
       Assets: (schema) => {
@@ -109,6 +111,14 @@ export const overrides: Record<"trading" | "market" | "broker", Overrides> = {
       // makes the generator skip it like market data's logos endpoint
       "get-v1beta1-logos-symbol": (operation) => {
         operation.responses["200"].content = { "image/png": {} };
+      },
+      // The generator treats request bodies as required. These two really are optional: the
+      // schemas say the body "can be omitted or left empty" and "is empty"
+      optionExercise: (operation) => void (operation.requestBody!.required = false),
+      optionDoNotExercise: (operation) => void (operation.requestBody!.required = false),
+      // Same as trading's AddAssetToWatchlistRequest, declared inline here
+      "post-v1-trading-accounts-account_id-watchlists-watchlist_id": (operation) => {
+        operation.requestBody!.content!["application/json"].schema!.required = ["symbol"];
       },
       // Also a contentless 200, described as "An Announcement object": the list endpoint's item
       "get-GET-v1-corporate_actions-announcements-id": (operation) => {

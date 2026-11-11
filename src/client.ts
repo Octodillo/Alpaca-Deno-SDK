@@ -142,9 +142,13 @@ export class Alpaca {
 
   async #send<E extends Endpoint>(endpoint: E, payload: Payload<E>): Promise<Response<E>> {
     const parts = payload as Partial<Record<keyof Parts<E>, unknown>>;
-    // `args` may set an optional part to undefined, which means leaving it out
-    const has = (part: keyof Parts<E>) => parts[part] !== undefined;
-    const params: PathParams = has("params") ? endpoint.params.parse(parts.params) : {};
+    // Every part goes through its schema, given or not, so a missing required part fails here
+    // instead of going out incomplete. An omitted params/query/headers counts as `{}` (`args` may
+    // set an optional one to undefined); a part the endpoint doesn't take (`Z.never()`) is skipped.
+    const parse = <T>(schema: Z.ZodType<T>, value: unknown, empty?: T): T | undefined =>
+      value === undefined && schema instanceof Z.ZodNever ? empty : schema.parse(value ?? empty);
+
+    const params = parse(endpoint.params, parts.params, {}) ?? {};
     const path = endpoint.path.replace(/\{(\w+)\}/g, (_, key: string) => {
       const value = params[key];
       if (value === undefined || value === null || value === "") {
@@ -163,23 +167,21 @@ export class Alpaca {
     const headers: Record<string, string> = { accept: "application/json", ...this.#authHeaders(endpoint.api) };
     const requestInit: RequestInit = { method: endpoint.method, headers };
 
-    if (has("query")) {
-      const query = endpoint.query.parse(parts.query);
-      Object.entries(query).forEach(([key, value]) => {
-        const values = (Array.isArray(value) ? value : [value]).filter((v) => v !== undefined && v !== null);
-        if (values.length) url.searchParams.set(key, values.join(","));
-      });
-    }
+    Object.entries(parse(endpoint.query, parts.query, {}) ?? {}).forEach(([key, value]) => {
+      const values = (Array.isArray(value) ? value : [value]).filter((v) => v !== undefined && v !== null);
+      if (values.length) url.searchParams.set(key, values.join(","));
+    });
 
-    if (has("headers") && endpoint.headers) {
-      Object.entries(endpoint.headers.parse(parts.headers)).forEach(([key, value]) => {
+    if (endpoint.headers) {
+      Object.entries(parse(endpoint.headers, parts.headers, {}) ?? {}).forEach(([key, value]) => {
         if (value !== undefined) headers[key] = value;
       });
     }
 
-    if (has("body")) {
+    const requestBody = parse(endpoint.body, parts.body);
+    if (requestBody !== undefined) {
       headers["content-type"] = "application/json";
-      requestInit.body = JSON.stringify(endpoint.body.parse(parts.body));
+      requestInit.body = JSON.stringify(requestBody);
     }
 
     const response = await fetch(url, requestInit);

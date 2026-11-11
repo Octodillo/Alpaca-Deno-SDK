@@ -79,6 +79,9 @@ export const typeTests = async () => {
   // @ts-expect-error: missing path param, inside `params`
   await client.request(deleteWidget, { params: {} });
 
+  // @ts-expect-error: missing body on a generated endpoint whose spec doesn't mark it required
+  await client.trading.watchlists.addByID({ params: { watchlist_id: "w1" } });
+
   // @ts-expect-error: `args` returns a payload that isn't this endpoint's own
   await client.request(badArgs, 1);
 

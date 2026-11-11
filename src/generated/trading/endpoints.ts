@@ -166,7 +166,7 @@ export const patchAccountConfig = {
 
   params: Z.never(),
   query: Z.never(),
-  body: S.AccountConfigurationsSchema.optional(),
+  body: S.AccountConfigurationsSchema,
   response: S.AccountConfigurationsSchema,
 
   okStatus: 200,
@@ -898,7 +898,7 @@ export const updateWatchlistById = {
 
   params: Z.object({ watchlist_id: Z.string() }),
   query: Z.never(),
-  body: S.UpdateWatchlistRequestSchema.optional(),
+  body: S.UpdateWatchlistRequestSchema,
   response: S.WatchlistSchema,
 
   okStatus: 200,
@@ -913,7 +913,7 @@ export const addAssetToWatchlist = {
 
   params: Z.object({ watchlist_id: Z.string() }),
   query: Z.never(),
-  body: S.AddAssetToWatchlistRequestSchema.optional(),
+  body: S.AddAssetToWatchlistRequestSchema,
   response: S.WatchlistSchema,
 
   okStatus: 200,
@@ -973,7 +973,7 @@ export const updateWatchlistByName = {
 
   params: Z.never(),
   query: Z.object({ name: Z.string() }),
-  body: S.UpdateWatchlistRequestSchema.optional(),
+  body: S.UpdateWatchlistRequestSchema,
   response: S.WatchlistSchema,
 
   okStatus: 200,
@@ -988,7 +988,7 @@ export const addAssetToWatchlistByName = {
 
   params: Z.never(),
   query: Z.object({ name: Z.string() }),
-  body: S.AddAssetToWatchlistRequestSchema.optional(),
+  body: S.AddAssetToWatchlistRequestSchema,
   response: S.WatchlistSchema,
 
   okStatus: 200,
