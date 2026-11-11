@@ -4,8 +4,9 @@ A typed Deno/TypeScript client for [Alpaca](https://alpaca.markets)'s three REST
 Endpoints and their Zod schemas are generated from Alpaca's OpenAPI specs, so request payloads are checked at compile
 time and validated at runtime, and responses come back parsed and typed.
 
-**Status:** complete. Deno only, not published. My own trading work has moved on to Rust with
-[`apca`](https://crates.io/crates/apca); this repo is finished and kept as a reference.
+**Status:** finished and no longer actively maintained. Deno only, not published. Trading and Market Data are verified
+against a paper account; Broker is generated from the spec and has never run against the real API. My own trading work
+has moved on to Rust with [`apca`](https://crates.io/crates/apca); this repo is kept as a reference.
 
 ## Usage
 
