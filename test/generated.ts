@@ -5,8 +5,8 @@ import { Alpaca, type Endpoint } from "../src/client.ts";
 import * as trading from "../src/generated/trading/endpoints.ts";
 import * as market from "../src/generated/market/endpoints.ts";
 import * as broker from "../src/generated/broker/endpoints.ts";
-import { OrderSchema as TradingOrderSchema } from "../src/generated/trading/schemas.ts";
-import { OrderSchema as BrokerOrderSchema } from "../src/generated/broker/schemas.ts";
+import * as tradingSchemas from "../src/generated/trading/schemas.ts";
+import * as brokerSchemas from "../src/generated/broker/schemas.ts";
 import { json, withStubbedFetch } from "./common.ts";
 
 const all: Record<string, Endpoint>[] = [trading, market, broker];
@@ -60,8 +60,8 @@ const specExamples = async (file: string): Promise<Record<string, { value: unkno
 Deno.test("generated: the specs' own order examples parse, multi-leg included", async () => {
   // A multi-leg parent has no symbol, side or asset class of its own (all ""), and its legs no type
   const cases = [
-    { file: "trading-api.json", schema: TradingOrderSchema },
-    { file: "broker-api.json", schema: BrokerOrderSchema },
+    { file: "trading-api.json", schema: tradingSchemas.OrderSchema },
+    { file: "broker-api.json", schema: brokerSchemas.OrderSchema },
   ];
   for (const { file, schema } of cases) {
     const examples = Object.entries(await specExamples(file)).filter(([name]) => name.endsWith("OrderResponse"));
@@ -73,10 +73,87 @@ Deno.test("generated: the specs' own order examples parse, multi-leg included", 
   }
 
   const { MultilegOptionsOrderResponse } = await specExamples("trading-api.json");
-  const order = TradingOrderSchema.parse(MultilegOptionsOrderResponse.value);
+  const order = tradingSchemas.OrderSchema.parse(MultilegOptionsOrderResponse.value);
   assertEquals([order.side, order.asset_class, order.symbol], ["", "", ""]);
   assertEquals(order.legs?.map((leg) => [leg.side, leg.type]), [["buy", ""], ["sell", ""]]);
   // Leniency is for responses only: an order can't be submitted with a blank side
   const blank = { symbol: "AAPL", qty: "1", side: "", type: "market", time_in_force: "day" };
   assert(!trading.postOrder.body.safeParse(blank).success);
+});
+
+// A oneOf of objects with nothing to tell them apart can't be a Z.union: the first member whose
+// required fields are present wins, and Zod strips whatever that member doesn't declare
+Deno.test("generated: a response that is one of several object shapes keeps every shape's fields", () => {
+  const dividend: Record<string, unknown> = {
+    id: "20261009000000000::9f6a7b1c-0000-4000-8000-000000000001",
+    activity_type: "DIV",
+    date: "2026-10-09",
+    net_amount: "1.02",
+    per_share_amount: "0.51",
+    status: "executed",
+    symbol: "AAPL",
+    qty: "2",
+    description: "Cash DIV",
+  };
+  const fill: Record<string, unknown> = {
+    id: "20261009133000000::9f6a7b1c-0000-4000-8000-000000000002",
+    activity_type: "FILL",
+    transaction_time: "2026-10-09T13:30:00Z",
+    type: "fill",
+    price: "227.5",
+    qty: "1",
+    side: "buy",
+    symbol: "AAPL",
+    leaves_qty: "0",
+    cum_qty: "1",
+    order_id: "9f6a7b1c-0000-4000-8000-000000000003",
+    order_status: "filled",
+  };
+  assertEquals<unknown>(trading.getAccountActivities.response.parse([dividend, fill]), [dividend, fill]);
+  assertEquals<unknown>(trading.getAccountActivitiesByActivityType.response.parse([dividend]), [dividend]);
+
+  const brokerDividend = { ...dividend, account_id: "9f6a7b1c-0000-4000-8000-000000000004" };
+  const brokerFill = { ...fill, account_id: "9f6a7b1c-0000-4000-8000-000000000004" };
+  assertEquals<unknown>(brokerSchemas.ActivitySchema.parse(brokerDividend), brokerDividend);
+  assertEquals<unknown>(brokerSchemas.ActivitySchema.parse(brokerFill), brokerFill);
+
+  const report: Record<string, unknown> = {
+    url: "https://example.com/report.pdf",
+    filename: "report.pdf",
+    expires_at: "2026-10-10T00:00:00Z",
+  };
+  assertEquals<unknown>(broker.getV1TransfersJitReports.response.parse(report), report);
+});
+
+Deno.test("generated: an activity event keeps the details of its own activity type", () => {
+  const event: Record<string, unknown> = {
+    at: "2026-10-09T13:30:00Z",
+    event_id: "01JABCDEFGHJKMNPQRSTVWXYZ0",
+    activity_type: "CSW",
+    executed_at: "2026-10-09T13:30:00Z",
+    status: "executed",
+    settle_date: "2026-10-09",
+    currency: "USD",
+    ref_id: "9f6a7b1c-0000-4000-8000-000000000005",
+    net_amount: "-100",
+  };
+  // Cash withdrawal, journal and ACATS details all satisfy an earlier member of the spec's oneOf
+  const details = [
+    { system_date: "2026-10-09", bank_transaction_id: "9f6a7b1c-0000-4000-8000-000000000006" },
+    { system_date: "2026-10-09", journal_id: "9f6a7b1c-0000-4000-8000-000000000007" },
+    { system_date: "2026-10-09", symbol: "AAPL", transfer_id: "9f6a7b1c-0000-4000-8000-000000000008" },
+  ];
+  // The broker's events also name the account
+  const brokerEvent = { ...event, account_id: "9f6a7b1c-0000-4000-8000-000000000004" };
+  const cases = [
+    { schema: tradingSchemas.ActivityEventV2Schema, event },
+    { schema: brokerSchemas.ActivityEventV2Schema, event: brokerEvent },
+  ];
+  for (const { schema, event } of cases) {
+    for (const detail of details) {
+      assertEquals<unknown>(schema.parse({ ...event, details: detail }), { ...event, details: detail });
+    }
+    // Still validated: a field of the wrong type is an error, not a fallthrough to a laxer member
+    assert(!schema.safeParse({ ...event, details: { system_date: 20261009 } }).success);
+  }
 });

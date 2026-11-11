@@ -112,7 +112,48 @@ export const getAccountActivities = {
     page_token: Z.string().optional(),
   }),
   body: Z.never(),
-  response: Z.array(Z.union([S.TradingActivitiesSchema, S.NonTradeActivitiesSchema])),
+  response: Z.array(Z.object({
+    activity_type: S.ActivityTypeSchema.optional(),
+    /** The cumulative quantity of shares involved in the execution. */
+    cum_qty: Z.string().optional(),
+    /** An id for the activity. Always in "::" format. Can be sent as page_token in requests to facilitate the paging of results. */
+    id: Z.string().optional(),
+    /** For partially_filled orders, the quantity of shares that are left to be filled. */
+    leaves_qty: Z.string().optional(),
+    /** The id for the order that filled. */
+    order_id: Z.string().optional(),
+    order_status: S.OrderStatusSchema.optional(),
+    /** The per-share price that the trade was executed at. */
+    price: Z.string().optional(),
+    /** The number of shares involved in the trade execution. */
+    qty: Z.string().optional(),
+    /** buy or sell */
+    side: Z.string().optional(),
+    /** The symbol of the security being traded. */
+    symbol: Z.string().optional(),
+    /** The time at which the execution occurred. */
+    transaction_time: Z.iso.datetime({ offset: true }).optional(),
+    /** fill or partial_fill */
+    type: Z.enum(["fill", "partial_fill"]).optional(),
+    activity_sub_type: S.ActivitySubTypeSchema.optional(),
+    /** Valid only for non-trading activity types. Null for trading activities. */
+    created_at: Z.iso.datetime({ offset: true }).optional(),
+    /** Currency denomination of the activity (e.g. USD). Included in NTA stream events and activity responses. */
+    currency: Z.string().optional(),
+    /** The CUSIP of the security involved with the activity. Not present for all activity types. */
+    cusip: Z.string().optional(),
+    /** The date on which the activity occurred or on which the transaction associated with the activity settled. */
+    date: Z.iso.date().optional(),
+    /** ID used to link activities who share a sibling relationship. */
+    group_id: Z.string().optional(),
+    /** The net amount of money (positive or negative) associated with the activity. */
+    net_amount: Z.string().optional(),
+    /** For dividend activities, the average amount paid per share. Not present for other activity types. */
+    per_share_amount: Z.string().optional(),
+    /** The activity status. */
+    status: Z.enum(["executed", "correct", "canceled"]).optional(),
+    description: Z.string().optional(),
+  })),
 
   okStatus: 200,
 } satisfies Endpoint;
@@ -135,7 +176,48 @@ export const getAccountActivitiesByActivityType = {
     page_token: Z.string().optional(),
   }),
   body: Z.never(),
-  response: Z.array(Z.union([S.TradingActivitiesSchema, S.NonTradeActivitiesSchema])),
+  response: Z.array(Z.object({
+    activity_type: S.ActivityTypeSchema.optional(),
+    /** The cumulative quantity of shares involved in the execution. */
+    cum_qty: Z.string().optional(),
+    /** An id for the activity. Always in "::" format. Can be sent as page_token in requests to facilitate the paging of results. */
+    id: Z.string().optional(),
+    /** For partially_filled orders, the quantity of shares that are left to be filled. */
+    leaves_qty: Z.string().optional(),
+    /** The id for the order that filled. */
+    order_id: Z.string().optional(),
+    order_status: S.OrderStatusSchema.optional(),
+    /** The per-share price that the trade was executed at. */
+    price: Z.string().optional(),
+    /** The number of shares involved in the trade execution. */
+    qty: Z.string().optional(),
+    /** buy or sell */
+    side: Z.string().optional(),
+    /** The symbol of the security being traded. */
+    symbol: Z.string().optional(),
+    /** The time at which the execution occurred. */
+    transaction_time: Z.iso.datetime({ offset: true }).optional(),
+    /** fill or partial_fill */
+    type: Z.enum(["fill", "partial_fill"]).optional(),
+    activity_sub_type: S.ActivitySubTypeSchema.optional(),
+    /** Valid only for non-trading activity types. Null for trading activities. */
+    created_at: Z.iso.datetime({ offset: true }).optional(),
+    /** Currency denomination of the activity (e.g. USD). Included in NTA stream events and activity responses. */
+    currency: Z.string().optional(),
+    /** The CUSIP of the security involved with the activity. Not present for all activity types. */
+    cusip: Z.string().optional(),
+    /** The date on which the activity occurred or on which the transaction associated with the activity settled. */
+    date: Z.iso.date().optional(),
+    /** ID used to link activities who share a sibling relationship. */
+    group_id: Z.string().optional(),
+    /** The net amount of money (positive or negative) associated with the activity. */
+    net_amount: Z.string().optional(),
+    /** For dividend activities, the average amount paid per share. Not present for other activity types. */
+    per_share_amount: Z.string().optional(),
+    /** The activity status. */
+    status: Z.enum(["executed", "correct", "canceled"]).optional(),
+    description: Z.string().optional(),
+  })),
 
   okStatus: 200,
 } satisfies Endpoint;

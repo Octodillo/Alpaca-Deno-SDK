@@ -106,6 +106,15 @@ export const overrides: Record<"trading" | "market" | "broker", Overrides> = {
           ca_type: { type: "string", enum: ["spinoff", "merger", "split", "reorg", "dividend"] },
         };
       },
+      // `date` is declared a date-time but is a plain date ("2026-10-16"), as the broker spec has it;
+      // and live activities carry a `description` this spec lacks
+      NonTradeActivities: (schema) => {
+        schema.properties = {
+          ...schema.properties,
+          date: { ...schema.properties!.date, format: "date" },
+          description: { type: "string" },
+        };
+      },
       // No `required` in the spec, but adding nothing to a watchlist isn't a request
       AddAssetToWatchlistRequest: (schema) => void (schema.required = ["symbol"]),
       // Live assets still carry `easy_to_borrow`; the spec only has the newer `borrow_status`

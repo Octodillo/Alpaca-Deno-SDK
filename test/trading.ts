@@ -44,6 +44,16 @@ liveTest("account.activities: plain dates as filters", async () => {
   assert(Array.isArray(await t.account.activitiesByType("FILL", range)));
 });
 
+liveTest("account.activities: fills and non-trade activities each keep their own fields", async () => {
+  const activities = await t.account.activities({ query: { page_size: 100 } });
+  for (const activity of activities) {
+    // One or the other, by the timestamp only that kind has: a paper account always has at least
+    // its opening JNLC, though not necessarily on this page
+    if (activity.activity_type === "FILL") assert(activity.transaction_time && activity.price, activity.id);
+    else assert(activity.date && activity.net_amount, activity.id);
+  }
+});
+
 liveTest("account.activitiesByType", async () => {
   const fills = await t.account.activitiesByType("FILL");
   assert(Array.isArray(fills));

@@ -241,8 +241,10 @@ class ZodWriter {
       const resolved = this.resolve(member);
       const types = this.typesOf(resolved);
       let part: FlatObject | undefined;
+      const options = resolved.oneOf ?? resolved.anyOf;
       if (resolved.allOf) part = this.flatten([...resolved.allOf, ...this.ownPart(resolved)]);
-      else if (resolved.oneOf || resolved.anyOf || resolved.enum) return undefined;
+      else if (options && !resolved.properties) part = this.merge(options);
+      else if (options || resolved.enum) return undefined;
       else if (types.length === 1 && types[0] === "object") {
         part = {
           properties: resolved.properties ?? {},
@@ -258,13 +260,50 @@ class ZodWriter {
     return result;
   }
 
+  /**
+   * Merges oneOf/anyOf options into one object holding every option's properties, or returns
+   * undefined when one of them isn't an object. A property is required only when every option
+   * requires it; one the options type differently accepts any of those types.
+   *
+   * A Z.union of the options would be wrong for responses: objects ignore keys they don't declare, so
+   * the first option whose required properties are present matches, and the fields of the option the
+   * API actually sent are stripped. Which option that is can't be told without a discriminator.
+   */
+  merge(options: Schema[]): FlatObject | undefined {
+    const parts: FlatObject[] = [];
+    for (const option of options) {
+      if (this.isOnlyNull(option)) continue;
+      const part = this.flatten([option]);
+      if (!part) return undefined;
+      parts.push(part);
+    }
+    if (!parts.length) return undefined;
+    const variants: Record<string, Schema[]> = {};
+    for (const part of parts) {
+      for (const [key, property] of Object.entries(part.properties)) {
+        const known = variants[key] ??= [];
+        if (!known.some((variant) => this.zod(variant) === this.zod(property))) known.push(property);
+      }
+    }
+    return {
+      properties: Object.fromEntries(
+        Object.entries(variants).map(([key, [first, ...rest]]) => [
+          key,
+          rest.length ? { description: first.description, anyOf: [first, ...rest] } : first,
+        ]),
+      ),
+      required: parts[0].required.filter((key) => parts.every((part) => part.required.includes(key))),
+      additionalProperties: parts.find((part) => part.additionalProperties !== undefined)?.additionalProperties,
+    };
+  }
+
   union(options: Schema[], key: string | undefined): string {
     const nonNull = options.filter((option) => !this.isOnlyNull(option));
     if (nonNull.length === 1) return this.zod(nonNull[0]);
     const parts = nonNull.map((option) => this.zod(option)).join(", ");
-    return key && this.isDiscriminated(key, nonNull)
-      ? `Z.discriminatedUnion(${JSON.stringify(key)}, [${parts}])`
-      : `Z.union([${parts}])`;
+    if (key && this.isDiscriminated(key, nonNull)) return `Z.discriminatedUnion(${JSON.stringify(key)}, [${parts}])`;
+    const merged = this.merge(nonNull);
+    return merged ? this.object(merged) : `Z.union([${parts}])`;
   }
 
   /** Whether every option is an object whose `key` is a required enum, with no value shared between options. */

@@ -113,7 +113,8 @@ the spec doesn't match the live API, `scripts/overrides.ts` patches the parsed s
 explaining each patch. Current overrides:
 
 - Fields the live API sends but the spec omits, which parsing would otherwise drop: several on `Account`, two on
-  `AccountConfigurations`, `subtag`/`source` on `Order`, `easy_to_borrow` on `Assets`
+  `AccountConfigurations`, `subtag`/`source` on `Order`, `easy_to_borrow` on `Assets`, `description` on
+  `NonTradeActivities` (whose `date` is also a plain date, not the date-time the spec declares)
 - Required fields the spec doesn't mark: `Order.id` and friends, and `CorporateAnnouncement` (whose spec has no
   `required` at all)
 - Nullability: `Assets.attributes`, the auction sides of `stock_daily_auctions`, and an untraded `OptionContract`'s
@@ -127,6 +128,12 @@ explaining each patch. Current overrides:
   `exercise`/`doNotExercise` are marked optional, and adding to a watchlist requires its `symbol`
 - Broker logos: declared without content, actually a PNG
 - Broker `GET v1/corporate_actions/announcements/{id}`: declared without content, returns an `Announcement`
+
+A `oneOf`/`anyOf` of object schemas without a usable discriminator (account activities, the details of an
+`ActivityEventV2`, the JIT report) is generated as one object with every member's properties, each required only if
+every member requires it. A `Z.union` would match the first member whose required fields happen to be present and strip
+the fields of the shape the API actually sent. The price is a wider type: tell a fill from a dividend by
+`activity_type`.
 
 A GET that the spec declares without content and no override covers (broker's funding wallet recipient bank) returns its
 JSON as `unknown` rather than discarding it.

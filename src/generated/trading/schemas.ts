@@ -1667,51 +1667,163 @@ export const OCTActivityV2Schema = Z.object({
 });
 export type OCTActivityV2 = Z.output<typeof OCTActivityV2Schema>;
 
-export const ActivityV2DetailNTASchema = Z.union([
-  DIVSPDActivityV2Schema,
-  CDIVActivityV2Schema,
-  SDIVActivityV2Schema,
-  CGDActivityV2Schema,
-  ForwardSplitActivityV2Schema,
-  ReverseSplitActivityV2Schema,
-  UnitSplitActivityV2Schema,
-  SpinoffActivityV2Schema,
-  MAActivityV2Schema,
-  NCActivityV2Schema,
-  FixedIncomeRedemptionActivityV2Schema,
-  FixedIncomeInterestActivityV2Schema,
-  REOActivityV2Schema,
-  RightsDistributionActivityV2Schema,
-  RightsSubscriptionElectionActivityV2Schema,
-  TenderOfferActivityV2Schema,
-  ExchangeOfferActivityV2Schema,
-  WarrantExerciseElectionActivityV2Schema,
-  WRMActivityV2Schema,
-  OpcaCDIVActivityV2Schema,
-  OpcaSDIVActivityV2Schema,
-  OpcaMAActivityV2Schema,
-  OpcaNCActivityV2Schema,
-  OpcaSPINActivityV2Schema,
-  OpcaFSPLITActivityV2Schema,
-  OpcaUSPLITActivityV2Schema,
-  OpcaRSPLITActivityV2Schema,
-  OPASNActivityV2Schema,
-  OPEXCActivityV2Schema,
-  OPEXPActivityV2Schema,
-  OPTRDActivityV2Schema,
-  OPCSHActivityV2Schema,
-  AcatsActivityV2Schema,
-  AcatcActivityV2Schema,
-  FOPTActivityV2Schema,
-  DIVNRAActivityV2Schema,
-  DIVWHActivityV2Schema,
-  JNLSActivityV2Schema,
-  JNLCActivityV2Schema,
-  CSWActivityV2Schema,
-  FEEActivityV2Schema,
-  MEMActivityV2Schema,
-  OCTActivityV2Schema,
-]);
+export const ActivityV2DetailNTASchema = Z.object({
+  /** Optional group ID which can help grouping together related activities */
+  group_id: Z.string().optional(),
+  /** The date when the activity was booked */
+  system_date: Z.iso.date(),
+  /** The unique identifier for this corporate action */
+  ca_id: Z.string().optional(),
+  /** The position_date for this corporate action */
+  position_date: Z.iso.date().optional(),
+  /** The reorg identifier, if present in the source corporate action definition */
+  reorg_id: Z.string().optional(),
+  /** Total cash amount paid */
+  cash_payout: Z.string().optional(),
+  /** The CUSIP of the security involved with the activity */
+  cusip: Z.string().optional(),
+  /** When due bills stop applying for this event */
+  due_bill_off_date: Z.iso.date().optional(),
+  /** When due bills begin to apply for this event */
+  due_bill_on_date: Z.iso.date().optional(),
+  /** Quantity of shares entitled to receive cash in lieu */
+  entitled_qty: Z.string().optional(),
+  /** The ex_date for this corporate action */
+  ex_date: Z.iso.date().optional(),
+  /** Indicates if related to a non-US security. Serialized as the JSON strings `"true"` or `"false"`, not a JSON boolean. */
+  foreign: Z.enum(["true", "false"]).optional(),
+  /** The ISIN of the security involved with the activity */
+  isin: Z.string().optional(),
+  /** The payable_date for this corporate action */
+  payable_date: Z.iso.date().optional(),
+  /** Cash payout per share */
+  rate: Z.string().optional(),
+  /** The record_date for this corporate action */
+  record_date: Z.iso.date().optional(),
+  /** Indicates if this is a special dividend. Serialized as the JSON strings `"true"` or `"false"`, not a JSON boolean. */
+  special: Z.enum(["true", "false"]).optional(),
+  /** The symbol of the security involved with the activity */
+  symbol: Z.string().optional(),
+  /** The total number of shares after the dividend */
+  new_qty: Z.string().optional(),
+  /** The paid quantity */
+  paid_qty: Z.string().optional(),
+  /** Long-term capital gains distribution rate per share, when applicable */
+  long_term_rate: Z.string().optional(),
+  /** Short-term capital gains distribution rate per share, when applicable */
+  short_term_rate: Z.string().optional(),
+  /** CUSIP of the new security after the split */
+  new_cusip: Z.string().optional(),
+  /** ISIN of the new security after the split */
+  new_isin: Z.string().optional(),
+  /** Ratio of new shares received */
+  new_rate: Z.string().optional(),
+  /** CUSIP of the old security before the split */
+  old_cusip: Z.string().optional(),
+  /** ISIN of the old security before the split */
+  old_isin: Z.string().optional(),
+  /** Ratio of old shares exchanged */
+  old_rate: Z.string().optional(),
+  /** The old quantity before the split */
+  old_qty: Z.string().optional(),
+  /** When due bills related to the split are redeemed */
+  due_bill_redemption_date: Z.iso.date().optional(),
+  /** Symbol of the new security after the split */
+  new_symbol: Z.string().optional(),
+  /** CUSIP for the alternate security after the split */
+  alternate_cusip: Z.string().optional(),
+  /** ISIN for the alternate security after the split */
+  alternate_isin: Z.string().optional(),
+  /** Quantity of alternate shares received */
+  alternate_qty: Z.string().optional(),
+  /** Ratio of alternate shares received */
+  alternate_rate: Z.string().optional(),
+  /** Symbol for the alternate security after the split */
+  alternate_symbol: Z.string().optional(),
+  /** When the unit split becomes effective */
+  effective_date: Z.iso.date().optional(),
+  /** Symbol of the old security before the split */
+  old_symbol: Z.string().optional(),
+  /** Market price of new shares after the spinoff */
+  new_price: Z.string().optional(),
+  /** CUSIP of the parent security */
+  source_cusip: Z.string().optional(),
+  /** ISIN of the parent security */
+  source_isin: Z.string().optional(),
+  /** Market price of parent shares before the spinoff */
+  source_price: Z.string().optional(),
+  /** Ratio of parent shares */
+  source_rate: Z.string().optional(),
+  /** Symbol of the parent security */
+  source_symbol: Z.string().optional(),
+  /** The source quantity */
+  source_qty: Z.string().optional(),
+  /** CUSIP of the acquiree */
+  acquiree_cusip: Z.string().optional(),
+  /** ISIN of the acquiree */
+  acquiree_isin: Z.string().optional(),
+  /** Rate of the acquiree */
+  acquiree_rate: Z.string().optional(),
+  /** Symbol of the acquiree */
+  acquiree_symbol: Z.string().optional(),
+  /** CUSIP of the acquirer */
+  acquirer_cusip: Z.string().optional(),
+  /** ISIN of the acquirer */
+  acquirer_isin: Z.string().optional(),
+  /** Rate of the acquirer */
+  acquirer_rate: Z.string().optional(),
+  /** Symbol of the acquirer */
+  acquirer_symbol: Z.string().optional(),
+  /** Quantity of the acquiree */
+  acquiree_qty: Z.string().optional(),
+  /** Quantity of the acquirer */
+  acquirer_qty: Z.string().optional(),
+  /** The cash rate */
+  cash_rate: Z.string().optional(),
+  /** The position quantity */
+  position_qty: Z.string().optional(),
+  /** The payment date */
+  payment_date: Z.iso.date().optional(),
+  /** Quantity for the redemption */
+  qty: Z.string().optional(),
+  /** Accrued interest rate (present for accrued-interest-on-call variants) */
+  accrued_interest_rate: Z.string().optional(),
+  interest_type: FixedIncomeInterestTypeSchema.optional(),
+  /** The order that generated this accrued interest. Present for trade-accrued INT/FI. */
+  order_id: Z.string().optional(),
+  /** The ref_id of the parent trade this interest is attached to. Present for trade-accrued INT/FI when a parent trade `ref_id` is available. */
+  parent_id: Z.string().optional(),
+  /** Call price used for accrued-interest-on-call variants */
+  price: Z.string().optional(),
+  /** Positive quantity removed from the source position */
+  removed_qty: Z.string().optional(),
+  /** The expiration date for the rights distribution */
+  expiration_date: Z.iso.date().optional(),
+  /** The new contract symbol */
+  new_contract_symbol: Z.string().optional(),
+  /** The old contract symbol */
+  old_contract_symbol: Z.string().optional(),
+  /** The contract symbol of the security involved with the activity */
+  contract_symbol: Z.string().optional(),
+  /** The ID that DTCC assigned to this transfer */
+  external_id: Z.string().optional(),
+  /** Hold date when the transfers settle */
+  hold_date: Z.iso.date().optional(),
+  /** The ID for original ACATS request */
+  request_id: Z.string().optional(),
+  /** Contra for the transfer */
+  contra: Z.string().optional(),
+  /** Tax country used as the primary jurisdiction when determining withholding treatment for the dividend. Other factors may affect the final withholding rate. The value is an [ISO 3166-1 alpha-3](https://www.iso.org/iso-3166-country-codes.html) country code. */
+  tax_country: Z.string().optional(),
+  /** The tax withholding rate applied to the dividend, represented as a value between 0 and 1 */
+  tax_rate: Z.string().optional(),
+  /** The journal's ID */
+  journal_id: Z.string().optional(),
+  /** The bank transaction's ID */
+  bank_transaction_id: Z.string().optional(),
+  /** The transfer's ID */
+  transfer_id: Z.string().optional(),
+});
 export type ActivityV2DetailNTA = Z.output<typeof ActivityV2DetailNTASchema>;
 
 /** Represents an account activity, sent over the Event Streaming API. */
@@ -1746,7 +1858,179 @@ export const ActivityEventV2Schema = Z.object({
   swap_fee_bps: Z.string().optional(),
   /** Conversion rate for local currency activities */
   swap_rate: Z.string().optional(),
-  details: Z.union([ActivityV2DetailTRDSchema, ActivityV2DetailNTASchema]),
+  details: Z.object({
+    /** Asset ID (For options this represents the option contract ID) */
+    asset_id: Z.string().optional(),
+    /** Order ID provided by the customer */
+    client_order_id: Z.string().optional(),
+    /** Commission to collect from the account holder */
+    commission: Z.string().optional(),
+    /** Total filled quantity on the order */
+    cum_qty: Z.string().optional(),
+    /** CUSIP of the security involved with the activity */
+    cusip: Z.string().optional(),
+    /** The execution type */
+    execution_type: Z.enum(["fill", "trade_correct", "trade_bust"]).optional(),
+    /** Unfilled quantity on the order, when order is filled value could be 0 */
+    leaves_qty: Z.string().optional(),
+    /** Order ID generated by Alpaca */
+    order_id: Z.string().optional(),
+    /** Identifies the current status of the order */
+    order_status: Z.string().optional(),
+    /** Represents what side of the transaction an order was on */
+    side: Z.enum(["buy", "sell"]).optional(),
+    /** The symbol of the security involved with the activity */
+    symbol: Z.string().optional(),
+    /** Optional group ID which can help grouping together related activities */
+    group_id: Z.string().optional(),
+    /** The date when the activity was booked */
+    system_date: Z.iso.date().optional(),
+    /** The unique identifier for this corporate action */
+    ca_id: Z.string().optional(),
+    /** The position_date for this corporate action */
+    position_date: Z.iso.date().optional(),
+    /** The reorg identifier, if present in the source corporate action definition */
+    reorg_id: Z.string().optional(),
+    /** Total cash amount paid */
+    cash_payout: Z.string().optional(),
+    /** When due bills stop applying for this event */
+    due_bill_off_date: Z.iso.date().optional(),
+    /** When due bills begin to apply for this event */
+    due_bill_on_date: Z.iso.date().optional(),
+    /** Quantity of shares entitled to receive cash in lieu */
+    entitled_qty: Z.string().optional(),
+    /** The ex_date for this corporate action */
+    ex_date: Z.iso.date().optional(),
+    /** Indicates if related to a non-US security. Serialized as the JSON strings `"true"` or `"false"`, not a JSON boolean. */
+    foreign: Z.enum(["true", "false"]).optional(),
+    /** The ISIN of the security involved with the activity */
+    isin: Z.string().optional(),
+    /** The payable_date for this corporate action */
+    payable_date: Z.iso.date().optional(),
+    /** Cash payout per share */
+    rate: Z.string().optional(),
+    /** The record_date for this corporate action */
+    record_date: Z.iso.date().optional(),
+    /** Indicates if this is a special dividend. Serialized as the JSON strings `"true"` or `"false"`, not a JSON boolean. */
+    special: Z.enum(["true", "false"]).optional(),
+    /** The total number of shares after the dividend */
+    new_qty: Z.string().optional(),
+    /** The paid quantity */
+    paid_qty: Z.string().optional(),
+    /** Long-term capital gains distribution rate per share, when applicable */
+    long_term_rate: Z.string().optional(),
+    /** Short-term capital gains distribution rate per share, when applicable */
+    short_term_rate: Z.string().optional(),
+    /** CUSIP of the new security after the split */
+    new_cusip: Z.string().optional(),
+    /** ISIN of the new security after the split */
+    new_isin: Z.string().optional(),
+    /** Ratio of new shares received */
+    new_rate: Z.string().optional(),
+    /** CUSIP of the old security before the split */
+    old_cusip: Z.string().optional(),
+    /** ISIN of the old security before the split */
+    old_isin: Z.string().optional(),
+    /** Ratio of old shares exchanged */
+    old_rate: Z.string().optional(),
+    /** The old quantity before the split */
+    old_qty: Z.string().optional(),
+    /** When due bills related to the split are redeemed */
+    due_bill_redemption_date: Z.iso.date().optional(),
+    /** Symbol of the new security after the split */
+    new_symbol: Z.string().optional(),
+    /** CUSIP for the alternate security after the split */
+    alternate_cusip: Z.string().optional(),
+    /** ISIN for the alternate security after the split */
+    alternate_isin: Z.string().optional(),
+    /** Quantity of alternate shares received */
+    alternate_qty: Z.string().optional(),
+    /** Ratio of alternate shares received */
+    alternate_rate: Z.string().optional(),
+    /** Symbol for the alternate security after the split */
+    alternate_symbol: Z.string().optional(),
+    /** When the unit split becomes effective */
+    effective_date: Z.iso.date().optional(),
+    /** Symbol of the old security before the split */
+    old_symbol: Z.string().optional(),
+    /** Market price of new shares after the spinoff */
+    new_price: Z.string().optional(),
+    /** CUSIP of the parent security */
+    source_cusip: Z.string().optional(),
+    /** ISIN of the parent security */
+    source_isin: Z.string().optional(),
+    /** Market price of parent shares before the spinoff */
+    source_price: Z.string().optional(),
+    /** Ratio of parent shares */
+    source_rate: Z.string().optional(),
+    /** Symbol of the parent security */
+    source_symbol: Z.string().optional(),
+    /** The source quantity */
+    source_qty: Z.string().optional(),
+    /** CUSIP of the acquiree */
+    acquiree_cusip: Z.string().optional(),
+    /** ISIN of the acquiree */
+    acquiree_isin: Z.string().optional(),
+    /** Rate of the acquiree */
+    acquiree_rate: Z.string().optional(),
+    /** Symbol of the acquiree */
+    acquiree_symbol: Z.string().optional(),
+    /** CUSIP of the acquirer */
+    acquirer_cusip: Z.string().optional(),
+    /** ISIN of the acquirer */
+    acquirer_isin: Z.string().optional(),
+    /** Rate of the acquirer */
+    acquirer_rate: Z.string().optional(),
+    /** Symbol of the acquirer */
+    acquirer_symbol: Z.string().optional(),
+    /** Quantity of the acquiree */
+    acquiree_qty: Z.string().optional(),
+    /** Quantity of the acquirer */
+    acquirer_qty: Z.string().optional(),
+    /** The cash rate */
+    cash_rate: Z.string().optional(),
+    /** The position quantity */
+    position_qty: Z.string().optional(),
+    /** The payment date */
+    payment_date: Z.iso.date().optional(),
+    /** Quantity for the redemption */
+    qty: Z.string().optional(),
+    /** Accrued interest rate (present for accrued-interest-on-call variants) */
+    accrued_interest_rate: Z.string().optional(),
+    interest_type: FixedIncomeInterestTypeSchema.optional(),
+    /** The ref_id of the parent trade this interest is attached to. Present for trade-accrued INT/FI when a parent trade `ref_id` is available. */
+    parent_id: Z.string().optional(),
+    /** Call price used for accrued-interest-on-call variants */
+    price: Z.string().optional(),
+    /** Positive quantity removed from the source position */
+    removed_qty: Z.string().optional(),
+    /** The expiration date for the rights distribution */
+    expiration_date: Z.iso.date().optional(),
+    /** The new contract symbol */
+    new_contract_symbol: Z.string().optional(),
+    /** The old contract symbol */
+    old_contract_symbol: Z.string().optional(),
+    /** The contract symbol of the security involved with the activity */
+    contract_symbol: Z.string().optional(),
+    /** The ID that DTCC assigned to this transfer */
+    external_id: Z.string().optional(),
+    /** Hold date when the transfers settle */
+    hold_date: Z.iso.date().optional(),
+    /** The ID for original ACATS request */
+    request_id: Z.string().optional(),
+    /** Contra for the transfer */
+    contra: Z.string().optional(),
+    /** Tax country used as the primary jurisdiction when determining withholding treatment for the dividend. Other factors may affect the final withholding rate. The value is an [ISO 3166-1 alpha-3](https://www.iso.org/iso-3166-country-codes.html) country code. */
+    tax_country: Z.string().optional(),
+    /** The tax withholding rate applied to the dividend, represented as a value between 0 and 1 */
+    tax_rate: Z.string().optional(),
+    /** The journal's ID */
+    journal_id: Z.string().optional(),
+    /** The bank transaction's ID */
+    bank_transaction_id: Z.string().optional(),
+    /** The transfer's ID */
+    transfer_id: Z.string().optional(),
+  }),
 });
 export type ActivityEventV2 = Z.output<typeof ActivityEventV2Schema>;
 
@@ -2252,7 +2536,7 @@ export const NonTradeActivitiesSchema = Z.object({
   /** The CUSIP of the security involved with the activity. Not present for all activity types. */
   cusip: Z.string().optional(),
   /** The date on which the activity occurred or on which the transaction associated with the activity settled. */
-  date: Z.iso.datetime({ offset: true }).optional(),
+  date: Z.iso.date().optional(),
   /** ID used to link activities who share a sibling relationship. */
   group_id: Z.string().optional(),
   /** An ID for the activity, always in "::" format. Can be sent as page_token in requests to facilitate the paging of results. */
@@ -2267,6 +2551,7 @@ export const NonTradeActivitiesSchema = Z.object({
   status: Z.enum(["executed", "correct", "canceled"]).optional(),
   /** The symbol of the security involved with the activity. Not present for all activity types. */
   symbol: Z.string().optional(),
+  description: Z.string().optional(),
 });
 export type NonTradeActivities = Z.output<typeof NonTradeActivitiesSchema>;
 
@@ -2815,7 +3100,12 @@ export const WalletErrorSchema = Z.object({
 export type WalletError = Z.output<typeof WalletErrorSchema>;
 
 /** A wallet or travel rule validation error. */
-export const TravelRuleErrorResponseSchema = Z.union([TravelRuleValidationErrorSchema, WalletErrorSchema]);
+export const TravelRuleErrorResponseSchema = Z.object({
+  error_code: TravelRuleValidationErrorCodeSchema.optional(),
+  message: Z.string(),
+  /** A list of actions to be taken to fulfill information requirements. */
+  next_actions: Z.array(TravelRuleNextActionSchema).optional(),
+});
 export type TravelRuleErrorResponse = Z.output<typeof TravelRuleErrorResponseSchema>;
 
 /** Request format used for updating an existing watchlist with a set of assets and/or a name. */

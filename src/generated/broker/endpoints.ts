@@ -822,7 +822,24 @@ export const getV1TransfersJitReports = {
     response_type: Z.enum(["inline", "download_url"]).optional(),
   }),
   body: Z.never(),
-  response: Z.union([S.JITReportSchema, S.JITReportDownloadURLSchema]),
+  response: Z.object({
+    /** Contains all activities that impact cash throughout the trading session including executed trades, trading fees, and corporate actions that involve cash allocations. */
+    detail: Z.string().optional(),
+    /** Highlights the net amount due to Alpaca by settlement or to the partner on the date of settlement in a formalized invoice format. */
+    net_payment: Z.string().optional(),
+    /** Includes additional information to account for T+0 and T+1 settling activity to clarify settlement journaling reconciliation. This report is generated after trading session close on T+1. */
+    net_payment_final: Z.string().optional(),
+    /** Consists of three columns and a single row, which lists the net money movement to or from Alpaca for T0, T1, and T2. */
+    net_summary: Z.string().optional(),
+    /** Lists of all open obligations towards the partner that are to be settled. */
+    obligation: Z.string().optional(),
+    /** Timestamp when the signed URL expires. */
+    expires_at: Z.iso.datetime({ offset: true }).optional(),
+    /** Name of the generated report file. */
+    filename: Z.string().optional(),
+    /** Temporary signed URL used to download the report. */
+    url: Z.string().optional(),
+  }),
 
   okStatus: 200,
 } satisfies Endpoint;
