@@ -445,7 +445,10 @@ const generateEndpoints = (spec: Spec, file: string, api: string, skipped: Skipp
       }
 
       const media = responses[0].content?.["application/json"];
-      const response = success[0] === "204" || !media ? "Z.void()" : writer.zod(media.schema ?? {});
+      // A GET always returns something. Where the spec declares its 200 without content, void would
+      // make the client throw the data away, so it comes back untyped instead
+      const contentless = method === "get" && success[0] !== "204" ? "Z.unknown()" : "Z.void()";
+      const response = success[0] === "204" || !media ? contentless : writer.zod(media.schema ?? {});
       const okStatus = success.length === 1 ? success[0] : `[${success.join(", ")}]`;
       const headers = group("header", true);
 

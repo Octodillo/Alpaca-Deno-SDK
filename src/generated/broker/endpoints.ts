@@ -60,7 +60,7 @@ export const getFundingWalletRecipientBank = {
   params: Z.object({ account_id: Z.string() }),
   query: Z.never(),
   body: Z.never(),
-  response: Z.void(),
+  response: Z.unknown(),
 
   okStatus: 200,
 } satisfies Endpoint;
@@ -1805,7 +1805,7 @@ export const getGetV1CorporateActionsAnnouncementsId = {
   params: Z.object({ id: Z.string() }),
   query: Z.never(),
   body: Z.never(),
-  response: Z.void(),
+  response: S.AnnouncementSchema,
 
   okStatus: 200,
 } satisfies Endpoint;

@@ -110,6 +110,12 @@ export const overrides: Record<"trading" | "market" | "broker", Overrides> = {
       "get-v1beta1-logos-symbol": (operation) => {
         operation.responses["200"].content = { "image/png": {} };
       },
+      // Also a contentless 200, described as "An Announcement object": the list endpoint's item
+      "get-GET-v1-corporate_actions-announcements-id": (operation) => {
+        operation.responses["200"].content = {
+          "application/json": { schema: { $ref: "#/components/schemas/Announcement" } },
+        };
+      },
     },
   },
 };

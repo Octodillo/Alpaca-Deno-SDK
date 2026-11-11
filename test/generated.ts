@@ -1,7 +1,13 @@
 // What the generator and overrides must get right, checked on the generated schemas themselves.
-import { assert } from "@std/assert";
+import { assert, assertEquals } from "@std/assert";
+import { Z } from "../src/external.ts";
+import { Alpaca, type Endpoint } from "../src/client.ts";
 import * as trading from "../src/generated/trading/endpoints.ts";
+import * as market from "../src/generated/market/endpoints.ts";
 import * as broker from "../src/generated/broker/endpoints.ts";
+import { json, withStubbedFetch } from "./common.ts";
+
+const all: Record<string, Endpoint>[] = [trading, market, broker];
 
 Deno.test("generated: date filters documented as YYYY-MM-DD accept plain dates and date-times", () => {
   const queries = [
@@ -17,4 +23,19 @@ Deno.test("generated: date filters documented as YYYY-MM-DD accept plain dates a
       assert(!query.safeParse({ [key]: "last tuesday" }).success, `${key} accepts anything`);
     }
   }
+});
+
+Deno.test("generated: no GET discards its response", async () => {
+  // The spec declares a few GETs with a contentless 200. They do return data, so they must not be void
+  const voidGets = all.flatMap((endpoints) =>
+    Object.entries(endpoints).filter(([, { method, response }]) => method === "GET" && response instanceof Z.ZodVoid)
+  ).map(([name]) => name);
+  assertEquals(voidGets, []);
+
+  const bank = { bank_id: "be3c368a-4c7c-4384-808e-f02c9f5a8afe", status: "APPROVED" };
+  await withStubbedFetch(() => json(bank), async () => {
+    const client = new Alpaca({ auth: { key: "K", secret: "S" }, broker: true });
+    const params = { account_id: "b0b6dd9d-8b9b-48a9-ba46-b9d54906e415" };
+    assertEquals(await client.broker.fundingWallets.recipientBank.get({ params }), bank);
+  });
 });
