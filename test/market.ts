@@ -16,7 +16,14 @@ const assertForbidden = async (call: () => Promise<unknown>) => {
 const iex = { feed: "iex" } as const;
 // A full past session, so results don't depend on today's market hours
 const session = { start: "2026-10-09T13:30:00Z", end: "2026-10-09T20:00:00Z", limit: 1 };
-const option = "AAPL261120C00250000";
+
+/** A currently listed, quoted AAPL contract. Contracts expire, so a hard-coded symbol would too. */
+const quotedOption = async () => {
+  const { snapshots } = await m.option.chain("AAPL", { limit: 100 });
+  const symbol = Object.keys(snapshots).find((symbol) => snapshots[symbol].latestQuote);
+  assert(symbol, "no quoted contract in the first page of the AAPL chain");
+  return symbol;
+};
 
 liveTest("stock.latest", async () => {
   assertEquals((await m.stock.latest.bar("AAPL", iex)).symbol, "AAPL");
@@ -67,6 +74,7 @@ liveTest("crypto", async () => {
 });
 
 liveTest("option (indicative feed)", async () => {
+  const option = await quotedOption();
   assert((await m.option.latest.quotes({ query: { symbols: option } })).quotes[option]);
   assert((await m.option.latest.trades({ query: { symbols: option } })).trades);
   assert((await m.option.historical.bars({ query: { symbols: option, timeframe: "1Day", limit: 1 } })).bars);
